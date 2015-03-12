@@ -1,0 +1,49 @@
+.rotate {
+    -webkit-animation-name: rotate; 
+    -webkit-animation-duration: 3s; 
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: linear;
+
+    -moz-animation-name: rotate; 
+    -moz-animation-duration: 3s; 
+    -moz-animation-iteration-count: infinite;
+    -moz-animation-timing-function: linear;
+}
+
+i {
+  .rotate;
+}
+
+.rotate.backwards {
+    -webkit-animation-name: rotate-back; 
+    -webkit-animation-duration: 3s; 
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: linear;
+
+    -moz-animation-name: rotate-back; 
+    -moz-animation-duration: 3s; 
+    -moz-animation-iteration-count: infinite;
+    -moz-animation-timing-function: linear;
+}
+
+@-webkit-keyframes rotate {
+    from {-webkit-transform: rotate(0deg);}
+    to {-webkit-transform: rotate(359deg);}
+}
+
+@-moz-keyframes rotate {
+    from {-moz-transform: rotate(0deg);}
+    to {-moz-transform: rotate(359deg);}
+}
+
+@-webkit-keyframes rotate-back {
+    from {-webkit-transform: rotate(359deg);}
+    to {-webkit-transform: rotate(0deg);}
+}
+
+@-moz-keyframes rotate-back {
+    from {-moz-transform: rotate(359deg);}
+    to {-moz-transform: rotate(0deg);}
+}
+
+/* *{-webkit-animation:r 0.5s infinite linear;}@-webkit-keyframes r{from {-webkit-transform: rotate(0deg);}to{-webkit-transform:rotate(359deg);}} */
