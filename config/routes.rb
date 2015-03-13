@@ -5,4 +5,5 @@ Rails.application.routes.draw do
   get 'logout', to: 'user_sessions#destroy', as: 'logout'
 
   root to: 'home#start'
+  get 'animations', to: 'home#animations'
 end
