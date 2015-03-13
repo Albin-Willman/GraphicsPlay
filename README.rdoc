@@ -1,6 +1,6 @@
 == README
 
-# Graphics play
+=== Graphics play
 
 This is just a playground where i collect snippets of css and js that I like.
 
