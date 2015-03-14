@@ -1,0 +1,19 @@
+<% content_for :content do %>
+  <section>
+    <div class="container">
+      <h2>Continuous rotation</h2>
+      <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+          <%= cube({
+            front:  'front',
+            back:   'back',
+            top:    'top',
+            bottom: 'bottom',
+            left:   'left',
+            right:  'right',
+            }) %>
+        </div>
+      </div>
+    </div>
+  </section>
+<% end %>

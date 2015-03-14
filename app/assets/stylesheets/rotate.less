@@ -1,25 +1,23 @@
 .rotate {
-    -webkit-animation-name: rotate; 
-    -webkit-animation-duration: 3s; 
-    -webkit-animation-iteration-count: infinite;
-    -webkit-animation-timing-function: linear;
+  -webkit-animation-name: rotate;
+  -webkit-animation-duration: 7s;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-timing-function: linear;
 
-    -moz-animation-name: rotate; 
-    -moz-animation-duration: 3s; 
-    -moz-animation-iteration-count: infinite;
-    -moz-animation-timing-function: linear;
+  -moz-animation-name: rotate;
+  -moz-animation-duration: 7s;
+  -moz-animation-iteration-count: infinite;
+  -moz-animation-timing-function: linear;
 }
 
 .rotate.backwards {
-    -webkit-animation-name: rotate-back; 
-    -webkit-animation-duration: 3s; 
-    -webkit-animation-iteration-count: infinite;
-    -webkit-animation-timing-function: linear;
+  -webkit-animation-name: rotate-back;
+  -moz-animation-name: rotate-back;
+}
 
-    -moz-animation-name: rotate-back; 
-    -moz-animation-duration: 3s; 
-    -moz-animation-iteration-count: infinite;
-    -moz-animation-timing-function: linear;
+.rotate.rotate-y {
+  -webkit-animation-name: rotate-y;
+  -moz-animation-name: rotate-y;
 }
 
 @-webkit-keyframes rotate {
@@ -30,6 +28,16 @@
 @-moz-keyframes rotate {
     from {-moz-transform: rotate(0deg);}
     to {-moz-transform: rotate(359deg);}
+}
+
+@-webkit-keyframes rotate-y {
+    from {-webkit-transform: rotateY(0deg);}
+    to {-webkit-transform: rotateY(359deg);}
+}
+
+@-moz-keyframes rotate-y {
+    from {-moz-transform: rotateY(0deg);}
+    to {-moz-transform: rotateY(359deg);}
 }
 
 @-webkit-keyframes rotate-back {

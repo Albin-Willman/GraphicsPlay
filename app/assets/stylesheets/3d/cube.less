@@ -1,0 +1,46 @@
+@cube-size: 200px;
+.cube-wrap {
+  perspective: 800px;
+  perspective-origin: 50% @cube-size/2;
+  height: 300px;
+}
+.cube {
+  position: relative;
+  width: @cube-size;
+  transform-style: preserve-3d;
+}
+
+.cube > div {
+  position: absolute;
+  width: @cube-size;
+  height: @cube-size;
+  line-height: @cube-size;
+  background-color: #ddd;
+  opacity: 0.5;
+  border: 1px solid black;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.back {
+  transform: rotateY(180deg) translateZ(-@cube-size/2);
+}
+.right {
+  transform: rotateY(-270deg) translateX(@cube-size/2);
+  transform-origin: top right;
+}
+.left {
+  transform: rotateY(270deg) translateX(-@cube-size/2);
+  transform-origin: center left;
+}
+.top {
+  transform: rotateX(-90deg) translateY(-@cube-size/2);
+  transform-origin: top center;
+}
+.bottom {
+  transform: rotateX(90deg) translateY(@cube-size/2);
+  transform-origin: bottom center;
+}
+.front {
+  transform: translateZ(@cube-size/2);
+}

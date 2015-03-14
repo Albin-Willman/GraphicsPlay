@@ -6,4 +6,7 @@ class HomeController < ApplicationController
   def animations
   end
 
+  def three_d
+  end
+
 end
