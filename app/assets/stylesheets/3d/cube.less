@@ -1,8 +1,9 @@
 @cube-size: 200px;
 .cube-wrap {
   perspective: 800px;
-  perspective-origin: 50% @cube-size/2;
-  height: 300px;
+  perspective-origin: 100% @cube-size*2;
+  height: 400px;
+  padding: 100px;
 }
 .cube {
   position: relative;
@@ -23,7 +24,7 @@
 }
 
 .back {
-  transform: rotateY(180deg) translateZ(-@cube-size/2);
+  transform: translateZ(-@cube-size/2) rotateY(180deg);
 }
 .right {
   transform: rotateY(-270deg) translateX(@cube-size/2);
