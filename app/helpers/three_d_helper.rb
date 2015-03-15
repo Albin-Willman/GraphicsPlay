@@ -23,4 +23,12 @@ module ThreeDHelper
     { content: content, class: '' }
   end
 
+  def sphere
+    content_tag :div, id: 'sphere', class: 'normal' do
+      content_tag :div, class: 'sphere-rotator' do
+        content_tag :div, '', class: 'sphere-container'
+      end
+    end
+  end
+
 end
