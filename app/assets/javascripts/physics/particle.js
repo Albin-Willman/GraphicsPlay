@@ -15,7 +15,6 @@ function Particle(x, y, mass, world){
   }
   this.update = function(forces){
     this.position = this.position.add(this.velocity);
-    forces.push(this.velocity.scale(-1 * this.world.friction));
     for (i in forces) {
       this.nudge(forces[i]);  
     }

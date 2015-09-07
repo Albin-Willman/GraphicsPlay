@@ -1,13 +1,12 @@
-
 $(function(){
   var width = 2000;
   var height = 2000;
   var numberOfParticles = 100;
   world = new World(width, height, 'world');
-  world.g = new Vector(0, 0.3);
-  world.friction = 0.4;
   var mouseStrength = 100;
-  var gravityStrength = 50;
+  var dragStrength = 50;
+  var gravity = new GravityForce(new Vector(0, 1), 0.2);
+  var friction = new FrictionForce(0.9);
 
   var particles = new Array();
   for (var i = 0; i < numberOfParticles; i++) {
@@ -16,25 +15,20 @@ $(function(){
     particles.push(particle);  
   }
   function updateWorld(){
-    var mouseDrag = new DragForce(getRelativeMousePosition(world));
-    var keyForce = keyPush();
-    var gravityPoint = new DragForce(fixedGravityPoint());
+    var mouseDrag = new DragForce(getRelativeMousePosition(world), mouseStrength);
+    var keyForce = new PushForce(keyPush(), 10);
+    var dragPoint = new DragForce(fixedDragPoint(), dragStrength);
 
     world.clear();
     for (my_particle in particles) {
       var particle = particles[my_particle];
       var forces   = [
-        world.gravityForce(particle)
-      ]
-      if(keyForce){
-        forces.push(keyForce);
-      }
-      if(mouseDrag.center) {
-        forces.push(mouseDrag.compute(mouseStrength, particle));
-      }
-      if(gravityPoint.center) {
-        forces.push(gravityPoint.compute(gravityStrength, particle));
-      }
+        gravity.compute(particle),
+        mouseDrag.compute(particle),
+        dragPoint.compute(particle),
+        keyForce.compute(particle),
+        friction.compute(particle)
+      ];
       particle.update(forces);
     }
     window.requestAnimationFrame(updateWorld);
@@ -70,16 +64,16 @@ document.onkeyup = function(e) {
 var keyForce = false
 function setActiveKey(keyCode){
   if (keyCode == '38') {
-    keyForce = new Vector(0, -10);
+    keyForce = new Vector(0, -1);
   }
   else if (keyCode == '40') {
-    keyForce = new Vector(0, 10);
+    keyForce = new Vector(0, 1);
   }
   else if (keyCode == '37') {
-    keyForce = new Vector(-10, 0);
+    keyForce = new Vector(-1, 0);
   }
   else if (keyCode == '39') {
-    keyForce = new Vector(10, 0);
+    keyForce = new Vector(1, 0);
   }
 }
 
@@ -89,12 +83,12 @@ function keyPush() {
   return keyForce;
 }
 
-var gravityPoint = false;
-function fixedGravityPoint() {
-  if(!gravityPoint)
-    gravityPoint = new Vector(1000, 1000);
-  gravityPoint = gravityPoint.add(new Vector(Math.random()-0.5, Math.random()-0.5));
-  return gravityPoint;
+var dragPoint = false;
+function fixedDragPoint() {
+  if(!dragPoint)
+    dragPoint = new Vector(1000, 1000);
+  dragPoint = dragPoint.add(new Vector(Math.random()-0.5, Math.random()-0.5));
+  return dragPoint;
 }
 
 function randomInteger(max){

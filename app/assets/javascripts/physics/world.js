@@ -5,15 +5,10 @@ function World(sizeX, sizeY, canvasId){
   this.canvas = document.getElementById(canvasId);
   this.canvas.setAttribute('width', sizeX);
   this.canvas.setAttribute('height', sizeY);
-
-  this.g = new Vector(0, 0);
   this.friction = 0.0;
 
   this.clear = function(){
     $(this.canvas).empty();
-  }
-  this.gravityForce = function(p) {
-    return this.g.scale(p.mass);
   }
   this.bounce = function(p) {
     if (p.x() - p.mass < 0) {
