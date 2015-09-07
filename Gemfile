@@ -17,18 +17,14 @@ gem 'therubyracer', require: 'v8'
 gem 'twitter-bootstrap-rails'
 gem 'simple_form'
 gem 'authlogic'
-gem 'kaminari'
-gem 'aws-sdk'
-gem 'paperclip'
 
 # Use jquery as the JavaScript library
 gem 'jquery-rails'
 gem 'jbuilder', '~> 2.0'
 
-
 group :development, :test do
   # Call 'debugger' anywhere in the code to stop execution and get a debugger console
-  gem 'debugger'
+  # gem 'debugger'
 
   # Access an IRB console on exception pages or by using <%= console %> in views
   gem 'web-console', '~> 2.0'

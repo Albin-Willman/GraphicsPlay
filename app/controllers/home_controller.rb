@@ -9,4 +9,6 @@ class HomeController < ApplicationController
   def three_d
   end
 
+  def physics
+  end
 end

@@ -7,4 +7,5 @@ Rails.application.routes.draw do
   root to: 'home#start'
   get 'animations', to: 'home#animations'
   get 'three_d', to: 'home#three_d'
+  get 'physics', to: 'home#physics'
 end
