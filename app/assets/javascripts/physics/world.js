@@ -12,20 +12,8 @@ function World(sizeX, sizeY, canvasId){
   this.clear = function(){
     $(this.canvas).empty();
   }
-  this.checkLimits = function(p) {
-    this.bounce(p);
-  }
   this.gravityForce = function(p) {
     return this.g.scale(p.mass);
-  }
-  this.mouseDragForce = function(mousePosition, p) {
-    var difference = mousePosition.difference(p.position);
-    var mag = difference.magnitude();
-    if (mag > 0.000001) {
-      return difference.scale(1/(mag));
-    } else {
-      return difference.scale(1000000);
-    }
   }
   this.bounce = function(p) {
     if (p.x() - p.mass < 0) {
@@ -43,4 +31,17 @@ function World(sizeX, sizeY, canvasId){
       p.position.y = 2*this.sizeY - p.y() - 2*p.mass;
     }
   }
+  this.fallThrough = function(p) {
+    if (p.x() < 0) {
+      p.position.x = this.sizeX - p.x();
+    } else if(p.x() > this.sizeX) {
+      p.position.x = p.x() - this.sizeX;
+    }
+    if (p.y() < 0) {
+      p.position.y = this.sizeY - p.y();
+    } else if(p.y() > this.sizeY) {
+      p.position.y = p.y() - this.sizeY;
+    }
+  }
+  this.checkLimits = this.bounce;
 }

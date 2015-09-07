@@ -1,12 +1,12 @@
 var svgns = "http://www.w3.org/2000/svg";
 function Particle(x, y, mass, world){
   this.position = new Vector(x, y);
-  this.velocity = new Vector(0, 0);
+  this.velocity = new Vector(0.01, 0.01);
   this.force    = new Vector(0, 0);
   this.mass = mass;
   this.world = world;
   this.color = 'black';
-  this.elasticity = 1;
+  this.elasticity = 0.95;
   this.x = function() {
     return this.position.x;
   }
