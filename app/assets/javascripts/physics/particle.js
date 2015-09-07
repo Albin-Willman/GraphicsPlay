@@ -1,10 +1,12 @@
 var svgns = "http://www.w3.org/2000/svg";
 function Particle(x, y, mass, world){
   this.position = new Vector(x, y);
-  this.velocity = new Vector(10, -10);
+  this.velocity = new Vector(0, 0);
   this.force    = new Vector(0, 0);
   this.mass = mass;
   this.world = world;
+  this.color = 'black';
+  this.elasticity = 1;
   this.x = function() {
     return this.position.x;
   }
@@ -20,6 +22,7 @@ function Particle(x, y, mass, world){
     this.velocity = this.velocity.add(this.acceleration());
     this.force    = new Vector(0, 0)
     this.world.checkLimits(this);
+    this.to_svg();
   }
   this.acceleration = function() {
     return this.force.scale(1/this.mass);
@@ -32,7 +35,7 @@ function Particle(x, y, mass, world){
     svg.setAttributeNS(null, 'cx', this.x());
     svg.setAttributeNS(null, 'cy', this.y());
     svg.setAttributeNS(null, 'r', this.mass);
-    svg.setAttributeNS(null, 'fill', 'yellow');
+    svg.setAttributeNS(null, 'fill', this.color);
     this.world.canvas.appendChild(svg);
   }
 }

@@ -7,4 +7,10 @@ function Vector(x, y) {
   this.scale = function(k) {
     return new Vector(this.x*k, this.y*k);
   }
+  this.magnitude = function() {
+    return Math.sqrt(this.x*this.x + this.y*this.y);
+  }
+  this.difference = function(other){
+    return new Vector(this.x - other.x, this.y - other.y);
+  }
 }
