@@ -13,4 +13,7 @@ function Vector(x, y) {
   this.difference = function(other){
     return new Vector(this.x - other.x, this.y - other.y);
   }
+  this.normalize = function(){
+    return this.scale(1/this.magnitude());
+  }
 }

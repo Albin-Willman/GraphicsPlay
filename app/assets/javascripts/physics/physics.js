@@ -2,31 +2,38 @@ $(function(){
   var width = 2000;
   var height = 2000;
   world = new World(width, height, 'world');
-  
-  var numberOfParticles = 40;
-  var mouseStrength     = 100;
+
+  var numberOfParticles = 100;
+  var mouseStrength     = -100;
   var dragStrength      = 50;
   var keyStrength       = 10;
-  var gravity = new GravityForce(new Vector(0, 1), 0.3);
-  var friction = new FrictionForce(0.2);
+  var maxMass           = 50;
 
-  var pf = new ParticleFactory(world, 20);
+  var pf = new ParticleFactory(world, maxMass);
   var particles = pf.build(numberOfParticles);
 
-  function updateWorld(){
-    var mouseDrag = new DragForce(getRelativeMousePosition(world), mouseStrength);
-    var keyForce = new PushForce(keyPush(), keyStrength);
-    var dragPoint = new DragForce(fixedDragPoint(), dragStrength);
+  var gravityFunction = function(world){
+    return new Vector(0, 1);
+  }
 
+  var gravity   = new GravityForce(gravityFunction, world, 0.3);
+  var friction  = new FrictionForce(0.2);
+  var mouseDrag = new DragForce(getRelativeMousePosition, world, mouseStrength);
+  var keyForce  = new PushForce(keyPush, world, keyStrength);
+  var dragPoint = new DragForce(randomDragPoint, world, dragStrength);
+  var noise     = new NoiseForce(3);
+
+  function updateWorld(){
     world.clear();
     for (my_particle in particles) {
       var particle = particles[my_particle];
       var forces   = [
+        noise.compute(particle)
         // gravity.compute(particle),
-        mouseDrag.compute(particle),
+        // mouseDrag.compute(particle),
         // dragPoint.compute(particle),
         // keyForce.compute(particle),
-        friction.compute(particle)
+        // friction.compute(particle)
       ];
       particle.update(forces);
     }
@@ -80,7 +87,7 @@ function keyPush() {
 }
 
 var dragPoint = false;
-function fixedDragPoint() {
+function randomDragPoint() {
   if(!dragPoint)
     dragPoint = new Vector(1000, 1000);
   dragPoint = dragPoint.add(new Vector(Math.random()-0.5, Math.random()-0.5));
