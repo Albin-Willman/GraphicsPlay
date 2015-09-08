@@ -76,18 +76,10 @@ document.onkeyup = function(e) {
 
 var keyForce = false
 function activeDirection(keyCode){
-  if (keyCode == '38') {
-    return new Vector(0, -1);
-  }
-  else if (keyCode == '40') {
-    return new Vector(0, 1);
-  }
-  else if (keyCode == '37') {
-    return new Vector(-1, 0);
-  }
-  else if (keyCode == '39') {
-    return new Vector(1, 0);
-  }
+  if (keyCode == '38')      { return new Vector(0, -1); }
+  else if (keyCode == '40') { return new Vector(0, 1);  }
+  else if (keyCode == '37') { return new Vector(-1, 0); }
+  else if (keyCode == '39') { return new Vector(1, 0);  }
 }
 
 function keyPush() {
