@@ -3,17 +3,15 @@ $(function(){
   var height = 2000;
   world = new World(width, height, 'world');
 
-  var numberOfParticles = 100;
-  var mouseStrength     = -100;
+  var numberOfParticles = 300;
+  var mouseStrength     = 50;
   var dragStrength      = 50;
   var keyStrength       = 10;
-  var maxMass           = 50;
-
-  var pf = new ParticleFactory(world, maxMass);
-  var particles = pf.build(numberOfParticles);
+  var maxMass           = 10;
+  var noiseStrength     = 0.1;
 
   var gravityFunction = function(world){
-    return new Vector(0, 1);
+    return new Vector(1, 1);
   }
 
   var gravity   = new GravityForce(gravityFunction, world, 0.3);
@@ -21,19 +19,22 @@ $(function(){
   var mouseDrag = new DragForce(getRelativeMousePosition, world, mouseStrength);
   var keyForce  = new PushForce(keyPush, world, keyStrength);
   var dragPoint = new DragForce(randomDragPoint, world, dragStrength);
-  var noise     = new NoiseForce(3);
+  var noise     = new NoiseForce(noiseStrength);
+
+  var pf = new ParticleFactory(world, maxMass);
+  var particles = pf.build(numberOfParticles);
 
   function updateWorld(){
     world.clear();
     for (my_particle in particles) {
       var particle = particles[my_particle];
       var forces   = [
-        noise.compute(particle)
+        // noise.compute(particle),
         // gravity.compute(particle),
-        // mouseDrag.compute(particle),
+        mouseDrag.compute(particle),
         // dragPoint.compute(particle),
         // keyForce.compute(particle),
-        // friction.compute(particle)
+        friction.compute(particle)
       ];
       particle.update(forces);
     }
@@ -54,7 +55,7 @@ document.onmousemove = function(e){
 
 function getRelativeMousePosition(canvas) {
   if(!mousePosition)
-    mousePosition = new Vector(1000, 1000);
+    mousePosition = new Vector(0, 0);
   return mousePosition;
 }
 document.onkeydown = function(e) {

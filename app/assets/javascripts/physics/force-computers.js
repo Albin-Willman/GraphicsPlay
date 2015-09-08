@@ -8,11 +8,7 @@ function DragForce(center, world, strength){
       return new Vector(0, 0);
     var difference = center.difference(p.position);
     var mag = difference.magnitude();
-    if (mag > 0.000001) {
-      return difference.scale(p.mass*this.strength/(mag*mag));
-    } else {
-      return difference.scale(1000000);
-    }
+    return difference.normalize().scale(p.mass*this.strength/mag);
   }
 }
 function GravityForce(direction, world, strength){
@@ -21,9 +17,7 @@ function GravityForce(direction, world, strength){
   this.world     = world;
   this.compute = function(p) {
     var direction = this.direction(this.world);
-    if (direction.x == 0 && direction.y == 0)
-      return direction;
-    return direction.scale(p.mass*this.strength/direction.magnitude());
+    return direction.normalize().scale(p.mass*this.strength);
   }
 }
 
@@ -33,9 +27,7 @@ function PushForce(direction, world, strength){
   this.world     = world;
   this.compute = function(_) {
     var direction = this.direction(this.world);
-    if (direction.x == 0 && direction.y == 0)
-      return direction;
-    return direction.scale(this.strength/direction.magnitude());
+    return direction.normalize().scale(this.strength);
   }
 }
 

@@ -5,7 +5,6 @@ function World(sizeX, sizeY, canvasId){
   this.canvas = document.getElementById(canvasId);
   this.canvas.setAttribute('width', sizeX);
   this.canvas.setAttribute('height', sizeY);
-  this.friction = 0.0;
 
   this.clear = function(){
     $(this.canvas).empty();
@@ -38,5 +37,5 @@ function World(sizeX, sizeY, canvasId){
       p.position.y = p.y() - this.sizeY;
     }
   }
-  this.checkLimits = this.bounce;
+  this.checkLimits = this.fallThrough;
 }

@@ -14,6 +14,8 @@ function Vector(x, y) {
     return new Vector(this.x - other.x, this.y - other.y);
   }
   this.normalize = function(){
+    if (this.x == 0 && this.y == 0)
+      return this;
     return this.scale(1/this.magnitude());
   }
 }
