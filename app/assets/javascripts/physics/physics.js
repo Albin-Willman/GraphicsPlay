@@ -1,54 +1,63 @@
 $(function(){
-  var width = 1500;
-  var height = 1500;
-  world = new World(width, height, 'world');
-
+  var width = 2000;
+  var height = 2000;
   var numberOfParticles = 30;
   var mouseStrength     = 100;
   var dragStrength      = 50;
   var keyStrength       = 10;
   var maxMass           = 40;
-  var noiseStrength     = 0.1;
+  var noiseStrength     = 5;
+  var gravityStrength   = 0.3;
+  var frictionStrength  = 0.3;
+  var gravityDirection  = (new Vector(1, 1)).normalize();
 
   var gravityFunction = function(world){
-    return new Vector(1, 1);
+    return gravityDirection;
   }
-
-  var gravity   = new GravityForce(gravityFunction, world, 0.3);
-  var friction  = new FrictionForce(0.4);
+  var world     = new World(width, height, 'world');
+  var gravity   = new GravityForce(gravityFunction, world, gravityStrength);
+  var friction  = new FrictionForce(frictionStrength);
   var mouseDrag = new DragForce(getRelativeMousePosition, world, mouseStrength);
   var keyForce  = new PushForce(keyPush, world, keyStrength);
   var dragPoint = new DragForce(fixDragPoint, world, dragStrength);
   var noise     = new NoiseForce(noiseStrength);
 
-  var pf = new ParticleFactory(world, maxMass);
-  var particles = pf.build(numberOfParticles);
+  var forces   = [
+    noise,
+    // gravity,
+    mouseDrag,
+    // dragPoint,
+    // keyForce,
+    friction
+  ];
+  world.limits = new RoundLimits(world);
+  // world.limits = new HardLimits(world);
+  // world.limits = new NoLimits(world);
+  var pf = new ParticleFactory(world, maxMass, forces);
+  pf.build(numberOfParticles);
+
+  var forces2  = [
+    noise,
+    gravity,
+    // mouseDrag,
+    // dragPoint,
+    keyForce,
+    friction
+  ];
+  var pf2 = new ParticleFactory(world, maxMass, forces2);
+  pf2.build(numberOfParticles);
 
   function updateWorld(){
-    world.clear();
-    for (particleIndex in particles) {
-      var particle = particles[particleIndex];
-      var forces   = [
-        noise.compute(particle),
-        // gravity.compute(particle),
-        // mouseDrag.compute(particle),
-        dragPoint.compute(particle),
-        keyForce.compute(particle),
-        friction.compute(particle)
-      ];
-      particle.update(forces);
-    }
+    world.update();
     window.requestAnimationFrame(updateWorld);
   }
-
   window.requestAnimationFrame(updateWorld);
 });
 
 var mousePosition = false;
 document.onmousemove = function(e){
   var pos = new Vector(e.pageX, e.pageY);
-  var canvas = document.getElementById('world');
-  var rect   = canvas.getBoundingClientRect();
+  var rect   = document.getElementById('world').getBoundingClientRect();
   var topCorner = new Vector(rect.left, rect.top);
   mousePosition = pos.difference(topCorner);
 }

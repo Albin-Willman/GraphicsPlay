@@ -5,7 +5,11 @@ function World(sizeX, sizeY, canvasId){
   this.canvas = document.getElementById(canvasId);
   this.canvas.setAttribute('width', sizeX);
   this.canvas.setAttribute('height', sizeY);
+  this.particles = [];
 
+  this.addParticle = function(p){
+    this.particles.push(p);
+  }
   this.clear = function(){
     $(this.canvas).empty();
   }
@@ -14,5 +18,11 @@ function World(sizeX, sizeY, canvasId){
   // this.limits = new NoLimits(this);
   this.checkLimits = function(p){
     this.limits.check(p)
+  }
+  this.update = function(){
+    this.clear();
+    for (i in this.particles) {
+      this.particles[i].update();
+    }
   }
 }

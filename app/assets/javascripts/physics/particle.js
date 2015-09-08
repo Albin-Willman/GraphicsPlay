@@ -7,16 +7,17 @@ function Particle(x, y, mass, world){
   this.world = world;
   this.color = 'black';
   this.elasticity = 0.95;
+  this.forces = []
   this.x = function() {
     return this.position.x;
   }
   this.y = function() {
     return this.position.y;
   }
-  this.update = function(forces){
+  this.update = function(){
     this.position = this.position.add(this.velocity);
-    for (i in forces) {
-      this.nudge(forces[i]);  
+    for (i in this.forces) {
+      this.nudge(this.forces[i].compute(this));  
     }
     this.velocity = this.velocity.add(this.acceleration());
     this.force    = new Vector(0, 0)

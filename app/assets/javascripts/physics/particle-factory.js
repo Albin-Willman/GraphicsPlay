@@ -1,12 +1,14 @@
-function ParticleFactory(world, maxMass){
+function ParticleFactory(world, maxMass, forces){
   this.maxMass = maxMass;
   this.world = world;
   this.build = function(numberOfParticles){
     var particles = new Array();
     for (var i = 0; i < numberOfParticles; i++) {
-      var particle = this.buildParticle();
-      particle.color = this.getRandomColor();
+      var particle    = this.buildParticle();
+      particle.color  = this.getRandomColor();
+      particle.forces = forces;
       particles.push(particle);  
+      this.world.addParticle(particle);
     }
     return particles;
   }
