@@ -22,7 +22,7 @@ function World(sizeX, sizeY, canvasId){
   this.update = function(){
     this.clear();
     for (i in this.particles) {
-      this.particles[i].update();
+      this.particles[i].update().draw();
     }
   }
 }

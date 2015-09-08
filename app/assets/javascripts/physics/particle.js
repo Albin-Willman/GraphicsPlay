@@ -22,7 +22,7 @@ function Particle(x, y, mass, world){
     this.velocity = this.velocity.add(this.acceleration());
     this.force    = new Vector(0, 0)
     this.world.checkLimits(this);
-    this.to_svg();
+    return this;
   }
   this.acceleration = function() {
     return this.force.scale(1/this.mass);
@@ -30,7 +30,7 @@ function Particle(x, y, mass, world){
   this.nudge = function(force) {
     this.force = this.force.add(force);
   }
-  this.to_svg = function(){
+  this.draw = function(){
     var svg = document.createElementNS(svgns, "circle");
     svg.setAttributeNS(null, 'cx', this.x());
     svg.setAttributeNS(null, 'cy', this.y());
