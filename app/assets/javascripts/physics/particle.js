@@ -1,7 +1,7 @@
 var svgns = "http://www.w3.org/2000/svg";
 function Particle(x, y, mass, world){
   this.position = new Vector(x, y);
-  this.velocity = new Vector(0.01, 0.01);
+  this.velocity = new Vector(1, 1);
   this.force    = new Vector(0, 0);
   this.mass = mass;
   this.world = world;

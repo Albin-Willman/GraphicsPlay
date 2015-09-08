@@ -1,13 +1,13 @@
 $(function(){
-  var width = 2000;
-  var height = 2000;
+  var width = 1500;
+  var height = 1500;
   world = new World(width, height, 'world');
 
-  var numberOfParticles = 300;
-  var mouseStrength     = 50;
+  var numberOfParticles = 30;
+  var mouseStrength     = 100;
   var dragStrength      = 50;
   var keyStrength       = 10;
-  var maxMass           = 10;
+  var maxMass           = 40;
   var noiseStrength     = 0.1;
 
   var gravityFunction = function(world){
@@ -15,10 +15,10 @@ $(function(){
   }
 
   var gravity   = new GravityForce(gravityFunction, world, 0.3);
-  var friction  = new FrictionForce(0.2);
+  var friction  = new FrictionForce(0.4);
   var mouseDrag = new DragForce(getRelativeMousePosition, world, mouseStrength);
   var keyForce  = new PushForce(keyPush, world, keyStrength);
-  var dragPoint = new DragForce(randomDragPoint, world, dragStrength);
+  var dragPoint = new DragForce(fixDragPoint, world, dragStrength);
   var noise     = new NoiseForce(noiseStrength);
 
   var pf = new ParticleFactory(world, maxMass);
@@ -26,14 +26,14 @@ $(function(){
 
   function updateWorld(){
     world.clear();
-    for (my_particle in particles) {
-      var particle = particles[my_particle];
+    for (particleIndex in particles) {
+      var particle = particles[particleIndex];
       var forces   = [
-        // noise.compute(particle),
+        noise.compute(particle),
         // gravity.compute(particle),
-        mouseDrag.compute(particle),
-        // dragPoint.compute(particle),
-        // keyForce.compute(particle),
+        // mouseDrag.compute(particle),
+        dragPoint.compute(particle),
+        keyForce.compute(particle),
         friction.compute(particle)
       ];
       particle.update(forces);
@@ -88,9 +88,9 @@ function keyPush() {
 }
 
 var dragPoint = false;
-function randomDragPoint() {
+function fixDragPoint() {
   if(!dragPoint)
-    dragPoint = new Vector(1000, 1000);
-  dragPoint = dragPoint.add(new Vector(Math.random()-0.5, Math.random()-0.5));
+    dragPoint = new Vector(750, 750);
+  // dragPoint = dragPoint.add(new Vector(Math.random()-0.5, Math.random()-0.5));
   return dragPoint;
 }
