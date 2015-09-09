@@ -1,26 +1,22 @@
-function ParticleFactory(world, maxMass, forces){
-  this.maxMass = maxMass;
+function ParticleFactory(world){
   this.world = world;
-  this.build = function(numberOfParticles){
-    var particles = new Array();
+  this.build = function(numberOfParticles, massComputer, forces){
     for (var i = 0; i < numberOfParticles; i++) {
-      var particle    = this.buildParticle();
+      var particle    = this.buildParticle(massComputer.compute());
       particle.color  = this.getRandomColor();
       particle.forces = forces;
-      particles.push(particle);  
       this.world.addParticle(particle);
     }
-    return particles;
   }
-  this.buildParticle = function(){
+  this.buildParticle = function(mass){
     return new Particle(
-        this.randomInteger(this.world.sizeX),
-        this.randomInteger(this.world.sizeY),
-        this.randomInteger(this.maxMass) + 1,
+        this.random(this.world.sizeX),
+        this.random(this.world.sizeY),
+        mass,
         world);
   }
-  this.randomInteger = function(max){
-    return Math.floor(Math.random() * max);
+  this.random = function(max){
+    return Math.random() * max;
   }
   this.getRandomColor = function() {
     var letters = '0123456789ABCDEF'.split('');
@@ -29,5 +25,12 @@ function ParticleFactory(world, maxMass, forces){
       color += letters[Math.floor(Math.random() * 16)];
     }
     return color;
+  }
+}
+
+function RandomMassComputer(maxMass){
+  this.maxMass = maxMass;
+  this.compute = function(){
+    return Math.random() * this.maxMass + 1;
   }
 }
