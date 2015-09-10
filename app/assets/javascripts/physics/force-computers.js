@@ -11,6 +11,20 @@ function DragForce(center, world, strength){
     return difference.normalize().scale(p.mass*this.strength/mag);
   }
 }
+
+function RubberForce(center, world, strength){
+  this.center   = center;
+  this.strength = strength;
+  this.world    = world;
+  this.compute  = function(p){
+    var center = this.center(this.world);
+    if(!center)
+      return new Vector(0, 0);
+    var difference = center.difference(p.position);
+    return difference.scale(p.mass*this.strength);
+  }
+}
+
 function GravityForce(direction, world, strength){
   this.direction = direction;
   this.strength  = strength;
