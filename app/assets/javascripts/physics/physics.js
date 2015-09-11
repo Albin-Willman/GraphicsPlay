@@ -76,10 +76,10 @@ $(function(){
 
   var forces   = [
     noise,
-    // gravity,
+    gravity,
     mouseDrag,
-    // dragPoint,
-    // keyForce,
+    dragPoint,
+    keyForce,
     friction
   ];
   // world.limits = new RoundLimits(world);
