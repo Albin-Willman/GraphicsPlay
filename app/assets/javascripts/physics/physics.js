@@ -53,11 +53,11 @@ $(function(){
   var width = 500;
   var height = 500;
   var numberOfParticles = 30;
-  var mouseStrength     = 0.001;
-  var dragStrength      = -5;
+  var mouseStrength     = 5;
+  var dragStrength      = 5;
   var keyStrength       = 1;
   var maxMass           = 4;
-  var noiseStrength     = 0.05;
+  var noiseStrength     = 0.5;
   var gravityStrength   = 0.03;
   var frictionStrength  = 0.03;
   var gravityDirection  = (new Vector(1, 1)).normalize();
@@ -69,14 +69,14 @@ $(function(){
   var world     = new World(width, height, 'world');
   var gravity   = new GravityForce(gravityFunction, world, gravityStrength);
   var friction  = new FrictionForce(frictionStrength);
-  var mouseDrag = new RubberForce(getRelativeMousePosition, world, mouseStrength);
+  var mouseDrag = new DragForce(getRelativeMousePosition, world, mouseStrength);
   var keyForce  = new PushForce(keyPush, world, keyStrength);
   var dragPoint = new DragForce(fixDragPoint, world, dragStrength);
   var noise     = new NoiseForce(noiseStrength);
 
   var forces   = [
     noise,
-    gravity,
+    // gravity,
     mouseDrag,
     dragPoint,
     keyForce,
@@ -143,7 +143,7 @@ $(function(){
   var dragPoint = false;
   function fixDragPoint() {
     if(!dragPoint)
-      dragPoint = new Vector(750, 750);
+      dragPoint = new Vector(250, 250);
     // dragPoint = dragPoint.add(new Vector(Math.random()-0.5, Math.random()-0.5));
     return dragPoint;
   }
