@@ -1,4 +1,8 @@
 function ForceComputer(center, world, strength){
+  this.compute  = function(p){
+    var direction = this.directionComputer.call(p);
+    return this.call(p, direction);
+  }
   this.call = function(p, direction){
     if(!direction)
       return new Vector(0, 0);
@@ -9,12 +13,41 @@ function ForceComputer(center, world, strength){
 function DragForce(center, world, strength){
   this.magnitudeComputer = new GravityMagnitudeComputer(strength);
   this.directionComputer = new PointDirectionComputer(center, world);
-  this.compute  = function(p){
-    var direction = this.directionComputer.call(p);
-    return this.call(p, direction);
-  }
 }
 DragForce.prototype = new ForceComputer();
+
+function RubberForce(center, world, strength){
+  this.magnitudeComputer = new RubberbandMagnitudeComputer(strength);
+  this.directionComputer = new PointDirectionComputer(center, world);
+}
+RubberForce.prototype = new ForceComputer();
+
+function GravityForce(direction, world, strength){
+  this.magnitudeComputer = new GravityMagnitudeComputer(strength);
+  this.directionComputer = new FixDirectionComputer(direction, world);
+}
+GravityForce.prototype = new ForceComputer();
+
+function PushForce(direction, world, strength){
+  this.magnitudeComputer = new ConstantMagnitudeComputer(strength);
+  this.directionComputer = new FixDirectionComputer(direction, world);
+}
+PushForce.prototype = new ForceComputer();
+
+function NoiseForce(strength){
+  this.magnitudeComputer = new RandomMagnitudeComputer(strength);
+  this.directionComputer = new RandomDirectionComputer(null, null);
+}
+NoiseForce.prototype = new ForceComputer();
+
+function FrictionForce(strength){
+  this.magnitudeComputer = new RubberbandMagnitudeComputer(-1 * strength);
+  this.directionComputer = new TravelDirectionComputer(null, null);
+}
+FrictionForce.prototype = new ForceComputer();
+
+
+// Direction computers
 
 function PointDirectionComputer(center, world){
   this.center = center;
@@ -27,58 +60,25 @@ function PointDirectionComputer(center, world){
   }
 }
 
-function RubberForce(center, world, strength){
-  this.center   = center;
-  this.world    = world;
-  this.magnitudeComputer = new RubberbandMagnitudeComputer(strength);
-  this.compute  = function(p){
-    var center = this.center(this.world);
-    if(!center)
-      return new Vector(0, 0);
-    var direction = center.difference(p.position);
-    return this.call(p, direction);
-  }
-}
-RubberForce.prototype = new ForceComputer();
-
-function GravityForce(direction, world, strength){
+function FixDirectionComputer(direction, world){
   this.direction = direction;
   this.world     = world;
-  this.magnitudeComputer = new GravityMagnitudeComputer(strength);
-  this.compute = function(p) {
-    var direction = this.direction(this.world);
-    return this.call(p, direction);
+  this.call = function(p){
+    return this.direction(this.world);
   }
 }
-GravityForce.prototype = new ForceComputer();
 
-function PushForce(direction, world, strength){
-  this.direction = direction;
-  this.world     = world;
-  this.magnitudeComputer = new ConstantMagnitudeComputer(strength);
-  this.compute = function(p) {
-    var direction = this.direction(this.world);
-    return this.call(p, direction);
+function RandomDirectionComputer(_, _){
+  this.call = function(_){
+    return new Vector(Math.random() - 0.5, Math.random() - 0.5);
   }
 }
-PushForce.prototype = new ForceComputer();
 
-function NoiseForce(strength){
-  this.magnitudeComputer = new RandomMagnitudeComputer(strength);
-  this.compute = function(p){
-    var direction = new Vector(Math.random() - 0.5, Math.random() - 0.5);
-    return this.call(p, direction);
+function TravelDirectionComputer(_, _){
+  this.call = function(p){
+    return p.velocity;
   }
 }
-NoiseForce.prototype = new ForceComputer();
-
-function FrictionForce(strength){
-  this.magnitudeComputer = new RubberbandMagnitudeComputer(-1 * strength);
-  this.compute = function(p){
-    return this.call(p, p.velocity);
-  }
-}
-FrictionForce.prototype = new ForceComputer();
 
 // Magnitude computers
 
@@ -109,4 +109,3 @@ function RubberbandMagnitudeComputer(strength){
     return this.strength * direction.magnitude();
   } 
 }
-
