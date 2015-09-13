@@ -10,45 +10,43 @@ function ForceComputer(center, world, strength){
   }
 }
 
+DragForce.prototype = new ForceComputer();
 function DragForce(center, world, strength){
   this.magnitudeComputer = new GravityMagnitudeComputer(strength);
   this.directionComputer = new PointDirectionComputer(center, world);
 }
-DragForce.prototype = new ForceComputer();
 
+RubberForce.prototype = new ForceComputer();
 function RubberForce(center, world, strength){
   this.magnitudeComputer = new RubberbandMagnitudeComputer(strength);
   this.directionComputer = new PointDirectionComputer(center, world);
 }
-RubberForce.prototype = new ForceComputer();
 
+GravityForce.prototype = new ForceComputer();
 function GravityForce(direction, world, strength){
   this.magnitudeComputer = new GravityMagnitudeComputer(strength);
   this.directionComputer = new FixDirectionComputer(direction, world);
 }
-GravityForce.prototype = new ForceComputer();
 
+PushForce.prototype = new ForceComputer();
 function PushForce(direction, world, strength){
   this.magnitudeComputer = new ConstantMagnitudeComputer(strength);
   this.directionComputer = new FixDirectionComputer(direction, world);
 }
-PushForce.prototype = new ForceComputer();
 
+NoiseForce.prototype = new ForceComputer();
 function NoiseForce(strength){
   this.magnitudeComputer = new RandomMagnitudeComputer(strength);
   this.directionComputer = new RandomDirectionComputer(null, null);
 }
-NoiseForce.prototype = new ForceComputer();
 
+FrictionForce.prototype = new ForceComputer();
 function FrictionForce(strength){
   this.magnitudeComputer = new RubberbandMagnitudeComputer(-1 * strength);
   this.directionComputer = new TravelDirectionComputer(null, null);
 }
-FrictionForce.prototype = new ForceComputer();
-
 
 // Direction computers
-
 function PointDirectionComputer(center, world){
   this.center = center;
   this.world  = world;
@@ -81,7 +79,6 @@ function TravelDirectionComputer(_, _){
 }
 
 // Magnitude computers
-
 function GravityMagnitudeComputer(strength){
   this.strength = strength;
   this.compute = function(p, direction){
@@ -98,7 +95,7 @@ function RandomMagnitudeComputer(strength){
 
 function ConstantMagnitudeComputer(strength){
   this.strength = strength;
-  this.compute = function(p, _){
+  this.compute = function(_, _){
     return this.strength;
   } 
 }
