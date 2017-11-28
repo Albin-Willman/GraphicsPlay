@@ -1,150 +1,126 @@
 $(function(){
-  var width = 100;
-  var height = 50;
-  var numberOfParticles = 20;
-  var dragStrength      = 2;
-  var maxMass           = 1;
-  var gravityStrength   = 0.01;
-  var frictionStrength  = 0.03;
-  var gravityDirection  = (new Vector(1, 1)).normalize();
-  var world     = new World(width, height, 'logo');
-  // world.limits = new RoundLimits(world);
-
-  var gravity    = new GravityForce(gravityFunction, world, gravityStrength);
-  var friction   = new FrictionForce(frictionStrength);
-  var dragPoint  = new DragForce(fixDragPoint, world, dragStrength);
-  var dragPoint2 = new DragForce(secondFixDragPoint, world, dragStrength);
-
-  var forces = [
-    dragPoint,
-    dragPoint2,
-    friction
-  ]
-
-  var pf = new ParticleFactory(world);
-  var massComputer = new RandomMassComputer(maxMass);
-  pf.build(numberOfParticles, massComputer,forces);
-
-  var dragPoint = false;
-  function fixDragPoint() {
-    if(!dragPoint)
-      dragPoint = new Vector(25, 25);
-    return dragPoint;
-  }
-  var dragPoint2 = false;
-  function secondFixDragPoint() {
-    if(!dragPoint2)
-      dragPoint2 = new Vector(75, 25);
-    return dragPoint2;
-  }
-
-  function gravityFunction(world){
-    return gravityDirection;
-  }
-
-  function updateWorld(){
-    world.update();
-    window.requestAnimationFrame(updateWorld);
-  }
-  window.requestAnimationFrame(updateWorld);
-
+  var worldOpts = {
+    canvas: 'logo',
+    width: 100,
+    height: 50,
+    limits: 'hard',
+    numberOfParticles: 20,
+    maxMass: 1,
+    forces: [
+      buildForceOpts('friction', 0.05),
+      buildForceOpts('drag', 3, buildDragPointFunction(new Vector(25, 25))),
+      buildForceOpts('drag', 3, buildDragPointFunction(new Vector(75, 25))),
+    ]
+  };
+  setupWorld(worldOpts);
 });
+
 $(function(){
-  var width = 500;
-  var height = 500;
-  var numberOfParticles = 30;
-  var mouseStrength     = 5;
-  var dragStrength      = 5;
-  var keyStrength       = 1;
-  var maxMass           = 4;
-  var noiseStrength     = 0.5;
-  var gravityStrength   = 0.03;
-  var frictionStrength  = 0.03;
-  var gravityDirection  = (new Vector(1, 1)).normalize();
+  var ff = setupForceFunctions('world');
 
-  var gravityFunction = function(world){
-    return gravityDirection;
+  var worldOpts = {
+    canvas: 'world',
+    width: 500,
+    height: 500,
+    limits: 'hard',
+    numberOfParticles: 200,
+    maxMass: 25,
+    forces: [
+
+      // buildForceOpts('gravity', 0.3, buildDirectionFunction(new Vector(0, 1))),
+      // buildForceOpts('rubber', 0.03, buildDragPointFunction(new Vector(250, 250))),
+      buildForceOpts('rubber', 0.01, ff.mousePosition),
+      buildForceOpts('drag', -5, ff.mousePosition),
+      buildForceOpts('push', 5, ff.keyDirection),
+      buildForceOpts('friction', 0.3),
+      buildForceOpts('noise', 0.31),
+    ]
   }
+  setupWorld(worldOpts);
+});
 
-  var world     = new World(width, height, 'world');
-  var gravity   = new GravityForce(gravityFunction, world, gravityStrength);
-  var friction  = new FrictionForce(frictionStrength);
-  var mouseDrag = new DragForce(getRelativeMousePosition, world, mouseStrength);
-  var keyForce  = new PushForce(keyPush, world, keyStrength);
-  var dragPoint = new DragForce(fixDragPoint, world, dragStrength);
-  var noise     = new NoiseForce(noiseStrength);
+function buildForceOpts(type, strength, direction = null) {
+  return {
+    type: type,
+    direction: direction,
+    strength: strength
+  };
+}
 
-  var forces   = [
-    noise,
-    // gravity,
-    mouseDrag,
-    dragPoint,
-    keyForce,
-    friction
-  ];
-  // world.limits = new RoundLimits(world);
-  // world.limits = new TunnelLimits(world);
-  world.limits = new NoLimits(world);
-  var massComputer = new RandomMassComputer(maxMass);
-  
-  var pf = new ParticleFactory(world);
-  pf.build(numberOfParticles, massComputer, forces);
-
-  forces  = [
-    noise,
-    gravity,
-    // mouseDrag,
-    // dragPoint,
-    keyForce,
-    friction
-  ];
-  // pf.build(numberOfParticles, massComputer, forces);
-
-  function updateWorld(){
-    world.update();
-    window.requestAnimationFrame(updateWorld);
+function setupForce(opts) {
+  switch (opts.type) {
+    case 'gravity':   return new GravityForce(opts.direction, opts.strength);
+    case 'friction':  return new FrictionForce(opts.strength);
+    case 'push':      return new PushForce(opts.direction, opts.strength);
+    case 'drag':      return new DragForce(opts.direction, opts.strength);
+    case 'rubber':    return new RubberForce(opts.direction, opts.strength);
+    case 'noise':     return new NoiseForce(opts.strength);
   }
-  window.requestAnimationFrame(updateWorld);
+}
 
+function setupLimits(type, world) {
+  switch (type) {
+
+    case 'tunnel': return new TunnelLimits(world);
+    case 'hard': return new HardLimits(world);
+    case 'round': return new RoundLimits(world);
+    default: return new NoLimits(world);
+  }
+}
+
+function buildDragPointFunction(point) {
+  return function() { return point; }
+}
+
+function buildDirectionFunction(direction) {
+  direction = direction.normalize();
+  return function() { return direction; }
+}
+
+function setupForceFunctions(canvasId) {
   var mousePosition = false;
+  var keyForce = false;
+
   document.onmousemove = function(e){
     var pos = new Vector(e.pageX, e.pageY);
-    var rect   = document.getElementById('world').getBoundingClientRect();
+    var rect   = document.getElementById(canvasId).getBoundingClientRect();
     var topCorner = new Vector(rect.left, rect.top);
     mousePosition = pos.difference(topCorner);
   }
 
-  function getRelativeMousePosition(canvas) {
-    if(!mousePosition)
-      mousePosition = new Vector(0, 0);
-    return mousePosition;
-  }
-  document.onkeydown = function(e) {
-    keyForce = activeDirection(e.keyCode);
-  }
-  document.onkeyup = function(e) {
-    keyForce = new Vector(0, 0);
-  }
-
-  var keyForce = false
   function activeDirection(keyCode){
-    if (keyCode == '38')      { return new Vector(0, -1); }
-    else if (keyCode == '40') { return new Vector(0, 1);  }
-    else if (keyCode == '37') { return new Vector(-1, 0); }
-    else if (keyCode == '39') { return new Vector(1, 0);  }
+    switch(keyCode) {
+      case 37: return new Vector(-1, 0);
+      case 38: return new Vector(0, -1);
+      case 39: return new Vector(1, 0);
+      case 40: return new Vector(0, 1);
+    }
   }
 
-  function keyPush() {
-    if(!keyForce)
-      keyForce = new Vector(0, 0);
-    return keyForce;
-  }
+  document.onkeydown = function(e) { keyForce = activeDirection(e.keyCode); }
+  document.onkeyup   = function(e) { keyForce = false; }
 
-  var dragPoint = false;
-  function fixDragPoint() {
-    if(!dragPoint)
-      dragPoint = new Vector(250, 250);
-    // dragPoint = dragPoint.add(new Vector(Math.random()-0.5, Math.random()-0.5));
-    return dragPoint;
+  return {
+      mousePosition: function(canvas) { return mousePosition; },
+      keyDirection: function() { return keyForce; }
+  };
+}
+
+function setupWorld(opts) {
+  var world = new World(opts.width, opts.height, opts.canvas);
+  if (!world.initated) { return; }
+
+  world.limits = setupLimits(opts.limits, world);
+
+  var forces = [];
+  for (var i = 0; i < opts.forces.length; i++) {
+    forces.push(setupForce(opts.forces[i]));
   }
-});
+  var pf = new ParticleFactory(world);
+  pf.build(opts.numberOfParticles, new RandomMassComputer(opts.maxMass), forces);
+  function updateWorld(){
+    world.update();
+    window.requestAnimationFrame(updateWorld);
+  }
+  window.requestAnimationFrame(updateWorld);
+}

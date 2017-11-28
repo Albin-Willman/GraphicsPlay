@@ -1,4 +1,4 @@
-function ForceComputer(center, world, strength){
+function ForceComputer(vector, strength){
   this.compute  = function(p){
     var direction = this.directionComputer.call(p);
     return this.call(p, direction);
@@ -11,27 +11,27 @@ function ForceComputer(center, world, strength){
 }
 
 DragForce.prototype = new ForceComputer();
-function DragForce(center, world, strength){
+function DragForce(center, strength){
   this.magnitudeComputer = new GravityMagnitudeComputer(strength);
-  this.directionComputer = new PointDirectionComputer(center, world);
+  this.directionComputer = new PointDirectionComputer(center);
 }
 
 RubberForce.prototype = new ForceComputer();
-function RubberForce(center, world, strength){
+function RubberForce(center, strength){
   this.magnitudeComputer = new RubberbandMagnitudeComputer(strength);
-  this.directionComputer = new PointDirectionComputer(center, world);
+  this.directionComputer = new PointDirectionComputer(center);
 }
 
 GravityForce.prototype = new ForceComputer();
-function GravityForce(direction, world, strength){
+function GravityForce(direction, strength){
   this.magnitudeComputer = new GravityMagnitudeComputer(strength);
-  this.directionComputer = new FixDirectionComputer(direction, world);
+  this.directionComputer = new FixDirectionComputer(direction);
 }
 
 PushForce.prototype = new ForceComputer();
-function PushForce(direction, world, strength){
+function PushForce(direction, strength){
   this.magnitudeComputer = new ConstantMagnitudeComputer(strength);
-  this.directionComputer = new FixDirectionComputer(direction, world);
+  this.directionComputer = new FixDirectionComputer(direction);
 }
 
 NoiseForce.prototype = new ForceComputer();
@@ -47,22 +47,20 @@ function FrictionForce(strength){
 }
 
 // Direction computers
-function PointDirectionComputer(center, world){
+function PointDirectionComputer(center){
   this.center = center;
-  this.world  = world;
   this.call = function(p){
-    var center = this.center(this.world);
+    var center = this.center();
     if(!center)
       return false;
     return center.difference(p.position);
   }
 }
 
-function FixDirectionComputer(direction, world){
+function FixDirectionComputer(direction){
   this.direction = direction;
-  this.world     = world;
   this.call = function(p){
-    return this.direction(this.world);
+    return this.direction();
   }
 }
 
@@ -97,12 +95,12 @@ function ConstantMagnitudeComputer(strength){
   this.strength = strength;
   this.compute = function(_, _){
     return this.strength;
-  } 
+  }
 }
 
 function RubberbandMagnitudeComputer(strength){
   this.strength = strength;
   this.compute = function(p, direction){
     return this.strength * direction.magnitude();
-  } 
+  }
 }

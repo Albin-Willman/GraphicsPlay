@@ -1,4 +1,7 @@
 $(function(){
+  if($('#sphere').length == 0) {
+    return;
+  }
 
   var el = document.createElement('div'),
     transformProps = 'transform WebkitTransform MozTransform OTransform msTransform'.split(' '),
