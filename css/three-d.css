@@ -1,0 +1,193 @@
+/* Cube */
+.cube-wrap {
+  perspective: 800px;
+  perspective-origin: 100% 400px;
+  height: 400px;
+  padding: 100px;
+}
+.cube {
+  position: relative;
+  width: 200px;
+  transform-style: preserve-3d;
+}
+.cube > div {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  line-height: 200px;
+  background-color: #ddd;
+  opacity: 0.5;
+  border: 1px solid black;
+  text-align: center;
+  vertical-align: middle;
+}
+.cube > .back {
+  transform: translateZ(-100px) rotateY(180deg);
+}
+.cube > .right {
+  transform: rotateY(-270deg) translateX(100px);
+  transform-origin: top right;
+}
+.cube > .left {
+  transform: rotateY(270deg) translateX(-100px);
+  transform-origin: center left;
+}
+.cube > .top {
+  transform: rotateX(-90deg) translateY(-100px);
+  transform-origin: top center;
+}
+.cube > .bottom {
+  transform: rotateX(90deg) translateY(100px);
+  transform-origin: bottom center;
+}
+.cube > .front {
+  transform: translateZ(100px);
+}
+
+/* Sphere */
+#sphere {
+  width: 100px;
+  height: 100px;
+  margin: 200px auto;
+  perspective: 800px;
+}
+
+.sphere-container {
+  width: 100px;
+  height: 100px;
+  transition: transform 200ms linear;
+  transform-style: preserve-3d;
+}
+
+.sphere-container > ul {
+  transform-style: preserve-3d;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}
+
+.sphere-container li {
+  width: 98px;
+  height: 98px;
+  position: absolute;
+  display: block;
+  background: #000;
+  border: 1px solid #fff;
+  opacity: 0.1;
+  border-radius: 50px;
+}
+
+/* Different spheres */
+/*************************************************/
+
+/* Square */
+
+#sphere.square li {
+  border-radius: 0;
+}
+
+/* Kaleidoscope */
+
+#sphere.kaleidoscope li {
+  opacity: 0.9;
+  animation: borderRadius 5s linear infinite alternate;
+}
+
+/* Eye */
+
+#sphere.eye li {
+  opacity: 0.5;
+  background: #fff;
+}
+
+#sphere.eye li:nth-child(7),
+#sphere.eye li:nth-child(8),
+#sphere.eye li:nth-child(6) {
+  background: #000;
+  opacity: 1;
+}
+
+/* Single */
+
+#sphere.single ul:nth-child(n+2) {
+  opacity: 0;
+}
+
+/* Contact */
+
+#sphere.contact ul {
+  opacity: 0;
+}
+
+#sphere.contact ul:nth-child(1),
+#sphere.contact ul:nth-child(4) {
+  opacity: 0.8;
+}
+
+#sphere.contact .sphere-rotator {
+  animation: spinHorizontal 2s linear infinite;
+}
+
+#sphere.contact ul:nth-child(1) {
+  animation: spinVerticalReverse 5s linear infinite;
+}
+
+#sphere.contact ul:nth-child(4) {
+  animation: spinVertical 5s linear infinite;
+}
+
+.contact .sphere-rotator {
+
+  transition: transform 500ms linear;
+  transform-style: preserve-3d;
+}
+
+/* Half */
+
+#sphere.half li {
+  background: #000;
+}
+
+#sphere.half li:nth-child(n+12),
+#sphere.half ul:nth-child(n+4) li:nth-child(1) {
+  display: none;
+}
+
+/* Animations */
+/*************************************************/
+
+@keyframes spinHorizontal {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(360deg);
+  }
+}
+
+@keyframes spinVertical {
+  from {
+    transform: rotateX(0deg);
+  }
+  to {
+    transform: rotateX(360deg);
+  }
+}
+
+@keyframes spinVerticalReverse {
+  from {
+    transform: rotateX(360deg);
+  }
+  to {
+    transform: rotateX(0deg);
+  }
+}
+
+@keyframes borderRadius {
+  from {
+    border-radius: 5px;
+  }
+  to {
+    border-radius: 50px;
+  }
+}
