@@ -1,0 +1,19 @@
+#world {
+  border: 1px solid #ddd;
+}
+
+#controls h4:first-child {
+  margin-top: 0;
+}
+
+#controls .form-group {
+  margin-bottom: 10px;
+}
+
+#controls label {
+  font-weight: normal;
+}
+
+#controls input[type=range]:disabled {
+  opacity: 0.4;
+}

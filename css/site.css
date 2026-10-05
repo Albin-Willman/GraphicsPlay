@@ -1,0 +1,90 @@
+:root {
+  --navbar-height: 80px;
+  --footer-height: 50px;
+  --base-padding: 15px;
+  --red: #8C1717;
+  --blue-d: #094E77;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  padding-top: var(--navbar-height);
+}
+
+section {
+  padding: var(--base-padding) 0;
+}
+
+.info .info-text {
+  font-size: 24px;
+}
+
+/* Navbar */
+nav.navbar {
+  box-shadow: 0 -1px 3px #555;
+}
+
+.navbar-brand {
+  height: var(--navbar-height);
+  padding: 0 var(--base-padding);
+}
+
+#logo {
+  margin: 15px 0;
+  max-height: 50px;
+  background: white;
+  border-radius: 3px;
+  border: 1px solid #ddd;
+}
+
+/* Sticky footer */
+.page-wrap {
+  min-height: 100%;
+  margin-bottom: calc(-1 * var(--footer-height));
+}
+
+.page-wrap::after {
+  content: "";
+  display: block;
+}
+
+.footer, .page-wrap::after {
+  height: var(--footer-height);
+}
+
+.footer {
+  padding: 0;
+  box-shadow: 0 4px 11px -6px #555 inset;
+  line-height: var(--footer-height);
+}
+
+/* Continuous rotation */
+.rotate {
+  animation: rotate 7s linear infinite;
+}
+
+.rotate.backwards {
+  animation-name: rotate-back;
+}
+
+.rotate.rotate-y {
+  animation-name: rotate-y;
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(359deg); }
+}
+
+@keyframes rotate-back {
+  from { transform: rotate(359deg); }
+  to   { transform: rotate(0deg); }
+}
+
+@keyframes rotate-y {
+  from { transform: rotateY(0deg); }
+  to   { transform: rotateY(359deg); }
+}

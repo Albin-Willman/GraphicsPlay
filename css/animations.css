@@ -1,0 +1,84 @@
+/* Icon boxes */
+.icon-box {
+  --size: 48px;
+  --padding: 15px;
+  --total: calc(var(--size) + var(--padding) * 2 + 3px * 2);
+  text-align: center;
+}
+
+.icon-box i.icon {
+  text-align: center;
+  width: var(--total);
+  height: var(--total);
+  border: 3px solid black;
+  border-radius: var(--size);
+  padding: var(--padding);
+  font-size: var(--size);
+  margin-bottom: 15px;
+}
+
+.icon-box i.icon.blue { border-color: var(--blue-d); }
+.icon-box i.icon.red  { border-color: var(--red); }
+
+@media (min-width: 992px) {
+  .icon-box {
+    padding-left: 120px;
+    position: relative;
+    text-align: left;
+  }
+  .icon-box i.icon {
+    position: absolute;
+    margin-top: calc(var(--total) / -2);
+    top: 50%;
+    left: 0;
+    margin-bottom: 0;
+  }
+  .md-padded {
+    padding: 45px 90px;
+  }
+}
+
+/* Flip card */
+.flip-container {
+  perspective: 1000px;
+}
+
+/* flip the pane when hovered */
+.flip-container:hover .flipper, .flip-container.hover .flipper {
+  transform: rotateY(180deg);
+}
+
+.flipper {
+  transition: 0.6s;
+  transform-style: preserve-3d;
+  position: relative;
+}
+
+/* hide back of pane during swap */
+.flipper > .front, .flipper > .back {
+  backface-visibility: hidden;
+  width: 100%;
+  min-height: 100%;
+  top: 0;
+  left: 0;
+}
+
+/* front pane, placed above back */
+.flipper > .front {
+  z-index: 2;
+  transform: rotateY(0deg);
+  position: relative;
+}
+
+/* back, initially hidden pane */
+.flipper > .back {
+  transform: rotateY(180deg);
+  position: absolute;
+}
+
+.card {
+  background-color: #f0f0f0;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  padding: 15px;
+}
