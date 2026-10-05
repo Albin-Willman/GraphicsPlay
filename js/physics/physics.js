@@ -53,14 +53,19 @@ function buildDirectionFunction(direction) {
 }
 
 function setupForceFunctions(canvasId) {
+  var canvas = document.getElementById(canvasId);
   var mousePosition = false;
-  var keyForce = false;
+  var heldKeys = {};
 
-  document.addEventListener('mousemove', function(e){
+  // Mouse forces only act while the cursor is over the world.
+  canvas.addEventListener('mousemove', function(e){
     var pos = new Vector(e.clientX, e.clientY);
-    var rect   = document.getElementById(canvasId).getBoundingClientRect();
+    var rect   = canvas.getBoundingClientRect();
     var topCorner = new Vector(rect.left, rect.top);
     mousePosition = pos.difference(topCorner);
+  });
+  canvas.addEventListener('mouseleave', function(){
+    mousePosition = false;
   });
 
   function activeDirection(key){
@@ -72,24 +77,37 @@ function setupForceFunctions(canvasId) {
     }
   }
 
+  // Sum of all held arrow keys, so two keys push diagonally.
+  function keyDirection(){
+    var sum = new Vector(0, 0);
+    for (var key in heldKeys) {
+      sum = sum.add(activeDirection(key));
+    }
+    if (sum.x == 0 && sum.y == 0) { return false; }
+    return sum.normalize();
+  }
+
   // Leave arrow keys alone while a form control (e.g. a slider) has focus.
   function isFormControl(el){
     return el && /^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(el.tagName);
   }
 
   document.addEventListener('keydown', function(e) {
-    var direction = activeDirection(e.key);
-    if (!direction || isFormControl(e.target)) { return; }
+    if (!activeDirection(e.key) || isFormControl(e.target)) { return; }
     e.preventDefault();
-    keyForce = direction;
+    heldKeys[e.key] = true;
   });
   document.addEventListener('keyup', function(e) {
-    if (activeDirection(e.key)) { keyForce = false; }
+    delete heldKeys[e.key];
+  });
+  // Key releases are missed while the window is unfocused.
+  window.addEventListener('blur', function() {
+    heldKeys = {};
   });
 
   return {
       mousePosition: function() { return mousePosition; },
-      keyDirection: function() { return keyForce; }
+      keyDirection: keyDirection
   };
 }
 
