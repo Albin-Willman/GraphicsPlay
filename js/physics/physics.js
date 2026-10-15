@@ -130,6 +130,11 @@ function setupWorld(opts) {
     setLimits: function(type) {
       world.limits = setupLimits(type, world);
     },
+    // energyLoss is the share (0..1) of the collision's kinetic energy that is lost:
+    // with restitution e, the energy along the line of impact is scaled by e².
+    setCollisions: function(enabled, energyLoss) {
+      world.collisions = enabled ? { restitution: Math.sqrt(1 - energyLoss) } : null;
+    },
     reset: function(numberOfParticles, maxMass) {
       world.clear();
       var pf = new ParticleFactory(world);

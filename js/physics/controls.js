@@ -26,7 +26,9 @@ document.addEventListener('DOMContentLoaded', function(){
     down:  buildDirectionFunction(new Vector(0, 1)),
   };
 
-  var settings = { limits: 'hard', numberOfParticles: 200, maxMass: 25 };
+  var settings = { limits: 'hard', numberOfParticles: 200, maxMass: 25, collisions: false, collisionLoss: 10 };
+
+  function applyCollisions() { sim.setCollisions(settings.collisions, settings.collisionLoss / 100); }
 
   function currentForceOpts() {
     return FORCE_CONTROLS
@@ -68,25 +70,29 @@ document.addEventListener('DOMContentLoaded', function(){
     ]);
   }
 
+  // A slider with a checkbox in its label that turns the setting on and off.
+  function toggleSlider(id, label, opts, enabled, onInput, onToggle) {
+    var group = slider(id, '', opts, onInput);
+    var range = group.querySelector('input[type=range]');
+    var checkbox = el('input', { type: 'checkbox' });
+    checkbox.checked = enabled;
+    range.disabled = !enabled;
+    checkbox.addEventListener('change', function() {
+      range.disabled = !checkbox.checked;
+      onToggle(checkbox.checked);
+    });
+    var labelEl = group.querySelector('label');
+    labelEl.removeAttribute('for');
+    labelEl.append(checkbox, ' ' + label);
+    return group;
+  }
+
   // Forces
   panel.append(el('h4', {}, ['Forces']));
   FORCE_CONTROLS.forEach(function(c) {
-    var group = slider('force-' + c.id, '', c, function(value) {
-      c.value = value;
-      sim.setForces(currentForceOpts());
-    });
-    var checkbox = el('input', { type: 'checkbox' });
-    checkbox.checked = c.enabled;
-    checkbox.addEventListener('change', function() {
-      c.enabled = checkbox.checked;
-      group.querySelector('input[type=range]').disabled = !c.enabled;
-      sim.setForces(currentForceOpts());
-    });
-    group.querySelector('input[type=range]').disabled = !c.enabled;
-    var label = group.querySelector('label');
-    label.removeAttribute('for');
-    label.append(checkbox, ' ' + c.label);
-    panel.append(group);
+    panel.append(toggleSlider('force-' + c.id, c.label, c, c.enabled,
+      function(value) { c.value = value; sim.setForces(currentForceOpts()); },
+      function(enabled) { c.enabled = enabled; sim.setForces(currentForceOpts()); }));
   });
 
   // World
@@ -96,6 +102,12 @@ document.addEventListener('DOMContentLoaded', function(){
   limitsSelect.value = settings.limits;
   limitsSelect.addEventListener('change', function() { sim.setLimits(limitsSelect.value); });
   panel.append(el('div', { class: 'form-group' }, [el('label', { for: 'limits' }, ['Edges']), limitsSelect]));
+
+  applyCollisions();
+  panel.append(toggleSlider('collisions', 'Collisions (% energy lost)',
+    { min: 0, max: 100, step: 1, value: settings.collisionLoss }, settings.collisions,
+    function(value) { settings.collisionLoss = value; applyCollisions(); },
+    function(enabled) { settings.collisions = enabled; applyCollisions(); }));
 
   function reset() { sim.reset(settings.numberOfParticles, settings.maxMass); }
 

@@ -22,7 +22,6 @@ function Particle(x, y, mass, world){
     }
     this.velocity = this.velocity.add(this.acceleration());
     this.force    = new Vector(0, 0);
-    this.world.checkLimits(this);
     return this;
   }
   this.acceleration = function() {
