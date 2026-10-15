@@ -142,10 +142,27 @@ function setupWorld(opts) {
   sim.setForces(opts.forces);
   sim.reset(opts.numberOfParticles, opts.maxMass);
 
-  function updateWorld(){
+  // Fixed time step: the forces are tuned per step, so always step at 60 Hz
+  // and run as many steps as real time demands, whatever the display's refresh rate.
+  var STEP_MS = 1000 / 60;
+  var MAX_FRAME_MS = 250; // after a stall (e.g. a background tab), skip ahead instead of catching up
+  var lastTime = null;
+  var accumulated = 0;
+
+  function updateWorld(now){
+    if (sim.paused || lastTime === null) {
+      lastTime = now;
+    }
     if (!sim.paused) {
-      world.update();
-      world.draw();
+      accumulated += Math.min(now - lastTime, MAX_FRAME_MS);
+      lastTime = now;
+      if (accumulated >= STEP_MS) {
+        while (accumulated >= STEP_MS) {
+          world.update();
+          accumulated -= STEP_MS;
+        }
+        world.draw();
+      }
     }
     window.requestAnimationFrame(updateWorld);
   }
