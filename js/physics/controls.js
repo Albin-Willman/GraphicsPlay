@@ -8,6 +8,12 @@ var FORCE_CONTROLS = [
   { id: 'gravity',  label: 'Gravity (down)',             type: 'gravity',  direction: 'down',  min: 0,   max: 2,   step: 0.05,  value: 0.3,  enabled: false },
 ];
 
+var SHAPE_OPTIONS = [
+  { value: 'rectangle', label: 'Rectangle' },
+  { value: 'circle',    label: 'Circle' },
+  { value: 'ellipse',   label: 'Ellipse' },
+];
+
 var LIMIT_OPTIONS = [
   { value: 'hard',   label: 'Bounce off walls' },
   { value: 'round',  label: 'Wrap around' },
@@ -26,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function(){
     down:  buildDirectionFunction(new Vector(0, 1)),
   };
 
-  var settings = { width: 500, height: 500, limits: 'hard', numberOfParticles: 200, minMass: 1, maxMass: 25, collisions: false, collisionLoss: 10 };
+  var settings = { width: 500, height: 500, shape: 'rectangle', limits: 'hard', numberOfParticles: 200, minMass: 1, maxMass: 25, collisions: false, collisionLoss: 10 };
 
   function applyCollisions() { sim.setCollisions(settings.collisions, settings.collisionLoss / 100); }
 
@@ -98,11 +104,32 @@ document.addEventListener('DOMContentLoaded', function(){
 
   // World
   panel.append(el('h4', {}, ['World']));
-  var limitsSelect = el('select', { id: 'limits', class: 'form-control input-sm' },
-    LIMIT_OPTIONS.map(function(o) { return el('option', { value: o.value }, [o.label]); }));
-  limitsSelect.value = settings.limits;
-  limitsSelect.addEventListener('change', function() { sim.setLimits(limitsSelect.value); });
-  panel.append(el('div', { class: 'form-group' }, [el('label', { for: 'limits' }, ['Edges']), limitsSelect]));
+  function select(id, label, options, value, onChange) {
+    var input = el('select', { id: id, class: 'form-control input-sm' },
+      options.map(function(o) { return el('option', { value: o.value }, [o.label]); }));
+    input.value = value;
+    input.addEventListener('change', function() { onChange(input.value); });
+    panel.append(el('div', { class: 'form-group' }, [el('label', { for: id }, [label]), input]));
+    return input;
+  }
+
+  select('shape', 'Shape', SHAPE_OPTIONS, settings.shape, function(value) {
+    settings.shape = value;
+    // Wrapping only works in a rectangle; other shapes get walls instead.
+    var rectangle = value == 'rectangle';
+    [].forEach.call(limitsSelect.options, function(option) {
+      option.disabled = !rectangle && (option.value == 'round' || option.value == 'tunnel');
+    });
+    if (limitsSelect.selectedOptions[0].disabled) {
+      limitsSelect.value = settings.limits = 'hard';
+      sim.setLimits('hard');
+    }
+    sim.setShape(value);
+  });
+  var limitsSelect = select('limits', 'Edges', LIMIT_OPTIONS, settings.limits, function(value) {
+    settings.limits = value;
+    sim.setLimits(value);
+  });
 
   function resize() { sim.setSize(settings.width, settings.height); }
   panel.append(slider('width', 'Width', { min: 100, max: 800, step: 10, value: settings.width },

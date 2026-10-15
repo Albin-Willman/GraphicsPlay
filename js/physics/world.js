@@ -12,6 +12,25 @@ function World(sizeX, sizeY, canvasId){
   this.particles = [];
   this.limits = new NoLimits(this);
   this.collisions = null; // null when off, otherwise { restitution: 0..1 }
+  this.shapeName = 'rectangle';
+  this.shape = null; // null for the plain rectangle, otherwise see shapes.js
+  this.outline = null;
+
+  // The area outside the shape is shaded, behind the particles.
+  this.setShape = function(name){
+    this.shapeName = name;
+    this.shape = makeShape(name, this.sizeX, this.sizeY);
+    if (!this.outline) {
+      this.outline = document.createElementNS(svgns, 'path');
+      this.outline.setAttribute('class', 'world-outside');
+      this.outline.setAttribute('fill-rule', 'evenodd');
+      this.canvas.insertBefore(this.outline, this.canvas.firstChild);
+    }
+    this.outline.setAttribute('d', this.shape ? this.shape.outline : '');
+  }
+  this.contains = function(x, y){
+    return !this.shape || this.shape.contains(x, y);
+  }
 
   this.addParticle = function(p){
     this.particles.push(p);
@@ -32,6 +51,7 @@ function World(sizeX, sizeY, canvasId){
     this.sizeY = sizeY;
     this.canvas.setAttribute('width', sizeX);
     this.canvas.setAttribute('height', sizeY);
+    if (this.shape) { this.setShape(this.shapeName); }
     this.draw();
   }
   this.checkLimits = function(p){

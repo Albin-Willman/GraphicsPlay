@@ -35,7 +35,11 @@ function setupForce(opts) {
   }
 }
 
+// Wrapping only makes sense for a rectangle; other shapes have walls or nothing.
 function setupLimits(type, world) {
+  if (world.shape) {
+    return type == 'none' ? new NoLimits(world) : new ShapeLimits(world);
+  }
   switch (type) {
     case 'tunnel': return new TunnelLimits(world);
     case 'hard': return new HardLimits(world);
@@ -118,6 +122,7 @@ function setupWorld(opts) {
 
   // Shared by every particle, so changing it in place affects them all.
   var forces = [];
+  var limitsType;
 
   var sim = {
     world: world,
@@ -132,7 +137,12 @@ function setupWorld(opts) {
       world.resize(width, height);
     },
     setLimits: function(type) {
+      limitsType = type;
       world.limits = setupLimits(type, world);
+    },
+    setShape: function(name) {
+      world.setShape(name);
+      world.limits = setupLimits(limitsType, world);
     },
     // energyLoss is the share (0..1) of the collision's kinetic energy that is lost:
     // with restitution e, the energy along the line of impact is scaled by e².
