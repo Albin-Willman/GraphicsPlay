@@ -22,6 +22,18 @@ function World(sizeX, sizeY, canvasId){
     }
     this.particles = [];
   }
+  // Positions scale with the world, so particles keep their layout and stay inside.
+  this.resize = function(sizeX, sizeY){
+    for (var i = 0; i < this.particles.length; i++) {
+      this.particles[i].position.x *= sizeX / this.sizeX;
+      this.particles[i].position.y *= sizeY / this.sizeY;
+    }
+    this.sizeX = sizeX;
+    this.sizeY = sizeY;
+    this.canvas.setAttribute('width', sizeX);
+    this.canvas.setAttribute('height', sizeY);
+    this.draw();
+  }
   this.checkLimits = function(p){
     this.limits.check(p);
   }

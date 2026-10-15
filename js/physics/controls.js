@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function(){
     down:  buildDirectionFunction(new Vector(0, 1)),
   };
 
-  var settings = { limits: 'hard', numberOfParticles: 200, minMass: 1, maxMass: 25, collisions: false, collisionLoss: 10 };
+  var settings = { width: 500, height: 500, limits: 'hard', numberOfParticles: 200, minMass: 1, maxMass: 25, collisions: false, collisionLoss: 10 };
 
   function applyCollisions() { sim.setCollisions(settings.collisions, settings.collisionLoss / 100); }
 
@@ -38,8 +38,8 @@ document.addEventListener('DOMContentLoaded', function(){
 
   var sim = setupWorld({
     canvas: 'world',
-    width: 500,
-    height: 500,
+    width: settings.width,
+    height: settings.height,
     limits: settings.limits,
     numberOfParticles: settings.numberOfParticles,
     minMass: settings.minMass,
@@ -103,6 +103,12 @@ document.addEventListener('DOMContentLoaded', function(){
   limitsSelect.value = settings.limits;
   limitsSelect.addEventListener('change', function() { sim.setLimits(limitsSelect.value); });
   panel.append(el('div', { class: 'form-group' }, [el('label', { for: 'limits' }, ['Edges']), limitsSelect]));
+
+  function resize() { sim.setSize(settings.width, settings.height); }
+  panel.append(slider('width', 'Width', { min: 100, max: 800, step: 10, value: settings.width },
+    function(value) { settings.width = value; resize(); }));
+  panel.append(slider('height', 'Height', { min: 100, max: 800, step: 10, value: settings.height },
+    function(value) { settings.height = value; resize(); }));
 
   applyCollisions();
   panel.append(toggleSlider('collisions', 'Collisions (% energy lost)',

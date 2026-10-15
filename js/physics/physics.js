@@ -128,6 +128,9 @@ function setupWorld(opts) {
         forces.push(setupForce(forceOpts[i]));
       }
     },
+    setSize: function(width, height) {
+      world.resize(width, height);
+    },
     setLimits: function(type) {
       world.limits = setupLimits(type, world);
     },

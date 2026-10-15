@@ -8,7 +8,7 @@ It can be stuff that I have written or stuff that I have found on the internet a
 
 - **Animations** (`animations.html`): rotating icons and a flip card, in pure CSS.
 - **3D** (`three-d.html`): a rotating CSS cube and a draggable sphere built from CSS-transformed panels.
-- **Physics** (`physics.html`): a small 2D particle engine drawn with SVG, with live controls for the forces, the edge behaviour, collisions and the number of particles.
+- **Physics** (`physics.html`): a small 2D particle engine drawn with SVG, with live controls for the forces, the world's size, the edge behaviour, collisions and the number of particles.
 
 ## Running it
 
