@@ -5,7 +5,8 @@ document.addEventListener('DOMContentLoaded', function(){
     height: 50,
     limits: 'hard',
     numberOfParticles: 20,
-    maxMass: 1,
+    minMass: 1,
+    maxMass: 2,
     forces: [
       buildForceOpts('friction', 0.05),
       buildForceOpts('drag', 3, buildDragPointFunction(new Vector(25, 25))),
@@ -135,17 +136,17 @@ function setupWorld(opts) {
     setCollisions: function(enabled, energyLoss) {
       world.collisions = enabled ? { restitution: Math.sqrt(1 - energyLoss) } : null;
     },
-    reset: function(numberOfParticles, maxMass) {
+    reset: function(numberOfParticles, minMass, maxMass) {
       world.clear();
       var pf = new ParticleFactory(world);
-      pf.build(numberOfParticles, new RandomMassComputer(maxMass), forces);
+      pf.build(numberOfParticles, new RandomMassComputer(minMass, maxMass), forces);
       world.draw();
     }
   };
 
   sim.setLimits(opts.limits);
   sim.setForces(opts.forces);
-  sim.reset(opts.numberOfParticles, opts.maxMass);
+  sim.reset(opts.numberOfParticles, opts.minMass, opts.maxMass);
 
   // Fixed time step: the forces are tuned per step, so always step at 60 Hz
   // and run as many steps as real time demands, whatever the display's refresh rate.

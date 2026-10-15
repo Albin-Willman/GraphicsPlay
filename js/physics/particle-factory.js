@@ -34,9 +34,10 @@ function ParticleFactory(world){
   }
 }
 
-function RandomMassComputer(maxMass){
+function RandomMassComputer(minMass, maxMass){
+  this.minMass = minMass;
   this.maxMass = maxMass;
   this.compute = function(){
-    return Math.random() * this.maxMass + 1;
+    return this.minMass + Math.random() * (this.maxMass - this.minMass);
   }
 }

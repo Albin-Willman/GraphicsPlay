@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function(){
     down:  buildDirectionFunction(new Vector(0, 1)),
   };
 
-  var settings = { limits: 'hard', numberOfParticles: 200, maxMass: 25, collisions: false, collisionLoss: 10 };
+  var settings = { limits: 'hard', numberOfParticles: 200, minMass: 1, maxMass: 25, collisions: false, collisionLoss: 10 };
 
   function applyCollisions() { sim.setCollisions(settings.collisions, settings.collisionLoss / 100); }
 
@@ -42,6 +42,7 @@ document.addEventListener('DOMContentLoaded', function(){
     height: 500,
     limits: settings.limits,
     numberOfParticles: settings.numberOfParticles,
+    minMass: settings.minMass,
     maxMass: settings.maxMass,
     forces: currentForceOpts()
   });
@@ -109,12 +110,30 @@ document.addEventListener('DOMContentLoaded', function(){
     function(value) { settings.collisionLoss = value; applyCollisions(); },
     function(enabled) { settings.collisions = enabled; applyCollisions(); }));
 
-  function reset() { sim.reset(settings.numberOfParticles, settings.maxMass); }
+  function reset() { sim.reset(settings.numberOfParticles, settings.minMass, settings.maxMass); }
 
   panel.append(slider('particles', 'Particles', { min: 1, max: 1000, step: 1, value: settings.numberOfParticles },
     null, function(value) { settings.numberOfParticles = value; reset(); }));
-  panel.append(slider('max-mass', 'Max size', { min: 1, max: 40, step: 1, value: settings.maxMass },
-    null, function(value) { settings.maxMass = value; reset(); }));
+
+  // Min and max size push each other along so min never ends up above max.
+  function setSlider(group, value) {
+    group.querySelector('input[type=range]').value = value;
+    group.querySelector('span').textContent = String(value);
+  }
+  var sizeRange = { min: 1, max: 40, step: 1 };
+  var minMassSlider = slider('min-mass', 'Min size', Object.assign({ value: settings.minMass }, sizeRange),
+    null, function(value) {
+      settings.minMass = value;
+      if (settings.maxMass < value) { settings.maxMass = value; setSlider(maxMassSlider, value); }
+      reset();
+    });
+  var maxMassSlider = slider('max-mass', 'Max size', Object.assign({ value: settings.maxMass }, sizeRange),
+    null, function(value) {
+      settings.maxMass = value;
+      if (settings.minMass > value) { settings.minMass = value; setSlider(minMassSlider, value); }
+      reset();
+    });
+  panel.append(minMassSlider, maxMassSlider);
 
   var pauseButton = el('button', { type: 'button', class: 'btn btn-default' }, ['Pause']);
   pauseButton.addEventListener('click', function() {
