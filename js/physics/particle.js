@@ -7,6 +7,7 @@ function Particle(x, y, mass, world){
   this.world = world;
   this.color = 'black';
   this.elasticity = 0.95;
+  this.restingSpeed = 0;
   this.forces = [];
   this.el = null;
   this.x = function() {
@@ -20,7 +21,11 @@ function Particle(x, y, mass, world){
     for (var i = 0; i < this.forces.length; i++) {
       this.nudge(this.forces[i].compute(this));
     }
-    this.velocity = this.velocity.add(this.acceleration());
+    var acceleration = this.acceleration();
+    this.velocity = this.velocity.add(acceleration);
+    // Hits slower than about two steps of this particle's own acceleration are resting
+    // contacts (e.g. sitting on the floor under gravity) rather than bounces.
+    this.restingSpeed = 2 * acceleration.magnitude();
     this.force    = new Vector(0, 0);
     return this;
   }

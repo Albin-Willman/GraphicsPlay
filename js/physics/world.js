@@ -37,17 +37,17 @@ function World(sizeX, sizeY, canvasId){
   this.checkLimits = function(p){
     this.limits.check(p);
   }
-  // Move everything, then separate overlapping particles, then apply the edges,
+  // Move everything, then apply the edges; collisions apply the edges as they go,
   // so a collision can't leave a particle outside the walls.
   this.update = function(){
     for (var i = 0; i < this.particles.length; i++) {
       this.particles[i].update();
     }
-    if (this.collisions) {
-      resolveCollisions(this.particles, this.collisions.restitution);
-    }
     for (var i = 0; i < this.particles.length; i++) {
       this.checkLimits(this.particles[i]);
+    }
+    if (this.collisions) {
+      resolveCollisions(this, this.collisions.restitution);
     }
   }
   this.draw = function(){
