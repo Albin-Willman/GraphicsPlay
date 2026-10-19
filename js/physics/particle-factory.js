@@ -9,12 +9,14 @@ function ParticleFactory(world){
       this.world.addParticle(particle);
     }
   }
+  // Somewhere inside the world's shape.
   this.buildParticle = function(mass){
-    return new Particle(
-        this.random(this.world.sizeX),
-        this.random(this.world.sizeY),
-        mass,
-        this.world);
+    var x, y;
+    do {
+      x = this.random(this.world.sizeX);
+      y = this.random(this.world.sizeY);
+    } while (!this.world.contains(x, y));
+    return new Particle(x, y, mass, this.world);
   }
   this.random = function(max){
     return Math.random() * max;
@@ -34,9 +36,10 @@ function ParticleFactory(world){
   }
 }
 
-function RandomMassComputer(maxMass){
+function RandomMassComputer(minMass, maxMass){
+  this.minMass = minMass;
   this.maxMass = maxMass;
   this.compute = function(){
-    return Math.random() * this.maxMass + 1;
+    return this.minMass + Math.random() * (this.maxMass - this.minMass);
   }
 }

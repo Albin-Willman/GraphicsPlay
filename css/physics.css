@@ -2,6 +2,11 @@
   border: 1px solid #ddd;
 }
 
+#world .world-outside {
+  fill: #eee;
+  stroke: #999;
+}
+
 #controls h4:first-child {
   margin-top: 0;
 }

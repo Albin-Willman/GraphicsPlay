@@ -5,7 +5,8 @@ document.addEventListener('DOMContentLoaded', function(){
     height: 50,
     limits: 'hard',
     numberOfParticles: 20,
-    maxMass: 1,
+    minMass: 1,
+    maxMass: 2,
     forces: [
       buildForceOpts('friction', 0.05),
       buildForceOpts('drag', 3, buildDragPointFunction(new Vector(25, 25))),
@@ -34,7 +35,11 @@ function setupForce(opts) {
   }
 }
 
+// Wrapping only makes sense for a rectangle; other shapes have walls or nothing.
 function setupLimits(type, world) {
+  if (world.shape) {
+    return type == 'none' ? new NoLimits(world) : new ShapeLimits(world);
+  }
   switch (type) {
     case 'tunnel': return new TunnelLimits(world);
     case 'hard': return new HardLimits(world);
@@ -117,6 +122,7 @@ function setupWorld(opts) {
 
   // Shared by every particle, so changing it in place affects them all.
   var forces = [];
+  var limitsType;
 
   var sim = {
     world: world,
@@ -127,25 +133,59 @@ function setupWorld(opts) {
         forces.push(setupForce(forceOpts[i]));
       }
     },
+    setSize: function(width, height) {
+      world.resize(width, height);
+    },
     setLimits: function(type) {
+      limitsType = type;
       world.limits = setupLimits(type, world);
     },
-    reset: function(numberOfParticles, maxMass) {
+    setShape: function(name) {
+      world.setShape(name);
+      world.limits = setupLimits(limitsType, world);
+    },
+    // energyLoss is the share (0..1) of the collision's kinetic energy that is lost:
+    // with restitution e, the energy along the line of impact is scaled by e².
+    setCollisions: function(enabled, energyLoss) {
+      world.collisions = enabled ? { restitution: Math.sqrt(1 - energyLoss) } : null;
+    },
+    reset: function(numberOfParticles, minMass, maxMass) {
       world.clear();
       var pf = new ParticleFactory(world);
-      pf.build(numberOfParticles, new RandomMassComputer(maxMass), forces);
+      pf.build(numberOfParticles, new RandomMassComputer(minMass, maxMass), forces);
       world.draw();
     }
   };
 
   sim.setLimits(opts.limits);
   sim.setForces(opts.forces);
-  sim.reset(opts.numberOfParticles, opts.maxMass);
+  sim.reset(opts.numberOfParticles, opts.minMass, opts.maxMass);
 
-  function updateWorld(){
+  // Fixed time step: the forces are tuned per step, so always step at 60 Hz
+  // and run as many steps as real time demands, whatever the display's refresh rate.
+  var STEP_MS = 1000 / 60;
+  var MAX_FRAME_MS = 250; // after a stall (e.g. a background tab), skip ahead instead of catching up
+  // If steps are slower than real time (lots of colliding particles), catching up would
+  // make every frame slower still. Run at most this many and let the simulation slow down.
+  var MAX_STEPS_PER_FRAME = 4;
+  var lastTime = null;
+  var accumulated = 0;
+
+  function updateWorld(now){
+    if (sim.paused || lastTime === null) {
+      lastTime = now;
+    }
     if (!sim.paused) {
-      world.update();
-      world.draw();
+      accumulated += Math.min(now - lastTime, MAX_FRAME_MS);
+      lastTime = now;
+      if (accumulated >= STEP_MS) {
+        for (var steps = 0; accumulated >= STEP_MS && steps < MAX_STEPS_PER_FRAME; steps++) {
+          world.update();
+          accumulated -= STEP_MS;
+        }
+        accumulated = Math.min(accumulated, STEP_MS);
+        world.draw();
+      }
     }
     window.requestAnimationFrame(updateWorld);
   }
