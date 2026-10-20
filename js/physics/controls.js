@@ -52,10 +52,13 @@ document.addEventListener('DOMContentLoaded', function(){
 
   function applyCollisions() { sim.setCollisions(settings.collisions, settings.collisionLoss / 100); }
 
+  // The sliders' forces plus one per gravity point (set up once the world exists).
+  var gravityPoints = null;
   function currentForceOpts() {
     return FORCE_CONTROLS
       .filter(function(c) { return c.enabled; })
-      .map(function(c) { return buildForceOpts(c.type, c.value, directions[c.direction] || null); });
+      .map(function(c) { return buildForceOpts(c.type, c.value, directions[c.direction] || null); })
+      .concat(gravityPoints ? gravityPoints.forceOpts() : []);
   }
 
   var sim = setupWorld({
@@ -118,6 +121,18 @@ document.addEventListener('DOMContentLoaded', function(){
       function(enabled) { c.enabled = enabled; sim.setForces(currentForceOpts()); }));
   });
 
+  // Gravity points
+  panel.append(el('h4', {}, ['Gravity points']));
+  var pointList = el('ul', { class: 'list-unstyled gravity-point-list' });
+  var clearButton = el('button', { type: 'button', class: 'btn btn-default btn-xs' }, ['Delete all']);
+  panel.append(pointList, el('div', { class: 'form-group' }, [clearButton]));
+  gravityPoints = new GravityPoints(document.getElementById('world'), pointList, function() {
+    clearButton.hidden = !gravityPoints.forceOpts().length;
+    sim.setForces(currentForceOpts());
+  });
+  clearButton.hidden = true;
+  clearButton.addEventListener('click', function() { gravityPoints.clear(); });
+
   // World
   panel.append(el('h4', {}, ['World']));
   function select(id, label, options, value, onChange) {
@@ -147,7 +162,10 @@ document.addEventListener('DOMContentLoaded', function(){
     sim.setLimits(value);
   });
 
-  function resize() { sim.setSize(settings.width, settings.height); }
+  function resize() {
+    sim.setSize(settings.width, settings.height);
+    gravityPoints.resize(settings.width, settings.height);
+  }
   panel.append(slider('width', 'Width', { min: 100, max: 800, step: 10, value: settings.width },
     function(value) { settings.width = value; resize(); }));
   panel.append(slider('height', 'Height', { min: 100, max: 800, step: 10, value: settings.height },

@@ -10,6 +10,9 @@ function World(sizeX, sizeY, canvasId){
   this.canvas.setAttribute('width', sizeX);
   this.canvas.setAttribute('height', sizeY);
   this.particles = [];
+  // Particles get their own layer, so anything drawn over them stays on top after a reset.
+  this.particleLayer = document.createElementNS(svgns, 'g');
+  this.canvas.appendChild(this.particleLayer);
   this.limits = new NoLimits(this);
   this.collisions = null; // null when off, otherwise { restitution: 0..1 }
   this.shapeName = 'rectangle';

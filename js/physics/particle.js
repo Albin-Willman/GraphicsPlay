@@ -50,7 +50,7 @@ function Particle(x, y, mass, world){
     if (!this.el) {
       this.el = document.createElementNS(svgns, "circle");
       this.el.setAttribute('r', this.mass);
-      this.world.canvas.appendChild(this.el);
+      this.world.particleLayer.appendChild(this.el);
     }
     if (fill !== this.fill) {
       this.el.setAttribute('fill', fill);

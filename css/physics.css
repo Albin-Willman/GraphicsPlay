@@ -34,3 +34,54 @@
   border: 1px solid #ccc;
   vertical-align: middle;
 }
+
+#world {
+  touch-action: none; /* a press on the world places a gravity point instead of scrolling */
+}
+
+#world .gravity-points {
+  pointer-events: none;
+}
+
+#world .gravity-points circle {
+  fill: rgba(0, 0, 0, 0.08);
+  stroke: #333;
+  stroke-width: 1.5;
+}
+
+#world .gravity-points circle.centre {
+  fill: #333;
+  stroke: none;
+}
+
+#world .gravity-points text {
+  font-size: 11px;
+  text-anchor: middle;
+  fill: #333;
+  stroke: #fff; /* a halo, so the label reads over the particles */
+  stroke-width: 3px;
+  paint-order: stroke;
+}
+
+#world .gravity-points .growing circle {
+  stroke-dasharray: 3 2;
+}
+
+#world .gravity-points .highlight circle {
+  stroke: #d9534f;
+  stroke-width: 3;
+}
+
+#world .gravity-points .highlight circle.centre {
+  fill: #d9534f;
+}
+
+#controls .gravity-point-list {
+  margin-bottom: 5px;
+}
+
+#controls .gravity-point-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
