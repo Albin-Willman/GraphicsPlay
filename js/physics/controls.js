@@ -21,6 +21,21 @@ var LIMIT_OPTIONS = [
   { value: 'none',   label: 'No walls' },
 ];
 
+// See colors.js. Each mode lists the labels of the colour pickers it uses.
+var COLOR_OPTIONS = [
+  { value: 'random', label: 'Random' },
+  { value: 'solid',  label: 'Solid' },
+  { value: 'size',   label: 'By size' },
+  { value: 'speed',  label: 'By speed' },
+  { value: 'height', label: 'By position (top to bottom)' },
+];
+var COLOR_PICKER_LABELS = {
+  solid: ['Colour'],
+  size:  ['Small', 'Big'],
+  speed: ['Slow', 'Fast'],
+  height: ['Top', 'Bottom'],
+};
+
 document.addEventListener('DOMContentLoaded', function(){
   var panel = document.getElementById('controls');
   if (!panel || !document.getElementById('world')) { return; }
@@ -32,7 +47,8 @@ document.addEventListener('DOMContentLoaded', function(){
     down:  buildDirectionFunction(new Vector(0, 1)),
   };
 
-  var settings = { width: 500, height: 500, shape: 'rectangle', limits: 'hard', numberOfParticles: 200, minMass: 1, maxMass: 25, collisions: false, collisionLoss: 10 };
+  var settings = { width: 500, height: 500, shape: 'rectangle', limits: 'hard', numberOfParticles: 200, minMass: 1, maxMass: 25, collisions: false, collisionLoss: 10,
+                   colorMode: 'random', colorFrom: '#1f3a93', colorTo: '#ff5a1f' };
 
   function applyCollisions() { sim.setCollisions(settings.collisions, settings.collisionLoss / 100); }
 
@@ -142,6 +158,32 @@ document.addEventListener('DOMContentLoaded', function(){
     { min: 0, max: 100, step: 1, value: settings.collisionLoss }, settings.collisions,
     function(value) { settings.collisionLoss = value; applyCollisions(); },
     function(enabled) { settings.collisions = enabled; applyCollisions(); }));
+
+  // Colours: the pickers' labels follow the mode, and only the ones it uses are shown.
+  function colorPicker(value, onInput) {
+    var input = el('input', { type: 'color', value: value });
+    input.addEventListener('input', function() { onInput(input.value); });
+    var label = el('span');
+    return { input: input, label: label, node: el('label', { class: 'color-picker' }, [input, ' ', label]) };
+  }
+  function applyColors() {
+    sim.setColors(settings.colorMode, settings.colorFrom, settings.colorTo);
+    var labels = COLOR_PICKER_LABELS[settings.colorMode] || [];
+    fromPicker.label.textContent = labels[0] || '';
+    toPicker.label.textContent = labels[1] || '';
+    fromPicker.node.hidden = !labels[0];
+    toPicker.node.hidden = !labels[1];
+    pickers.hidden = !labels.length;
+  }
+  select('color-mode', 'Colour', COLOR_OPTIONS, settings.colorMode, function(value) {
+    settings.colorMode = value;
+    applyColors();
+  });
+  var fromPicker = colorPicker(settings.colorFrom, function(value) { settings.colorFrom = value; applyColors(); });
+  var toPicker = colorPicker(settings.colorTo, function(value) { settings.colorTo = value; applyColors(); });
+  var pickers = el('div', { class: 'form-group' }, [fromPicker.node, ' ', toPicker.node]);
+  panel.append(pickers);
+  applyColors();
 
   function reset() { sim.reset(settings.numberOfParticles, settings.minMass, settings.maxMass); }
 

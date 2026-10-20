@@ -8,7 +8,7 @@ It can be stuff that I have written or stuff that I have found on the internet a
 
 - **Animations** (`animations.html`): rotating icons and a flip card, in pure CSS.
 - **3D** (`three-d.html`): a rotating CSS cube and a draggable sphere built from CSS-transformed panels.
-- **Physics** (`physics.html`): a small 2D particle engine drawn with SVG, with live controls for the forces, the world's shape and size, the edge behaviour, collisions and the number of particles.
+- **Physics** (`physics.html`): a small 2D particle engine drawn with SVG, with live controls for the forces, the world's shape and size, the edge behaviour, collisions, the ball colours and the number of particles.
 
 ## Running it
 
@@ -29,6 +29,7 @@ and open http://localhost:8000.
 - `limits.js`: what happens at the edges (bounce, wrap, none).
 - `shapes.js`: non-rectangular worlds (circle, ellipse): containment, distance to the wall and the outline.
 - `collisions.js`: particle-particle collisions, with a grid so only nearby particles are tested.
+- `colors.js`: ball colouring (random, solid, or blended by size, speed or height).
 - `particle.js`, `particle-factory.js`, `world.js`: the simulation and SVG drawing.
 - `physics.js`: wires a world together from an options object (also runs the navbar logo).
 - `controls.js`: the control panel on the physics page.

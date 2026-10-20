@@ -15,6 +15,7 @@ function World(sizeX, sizeY, canvasId){
   this.shapeName = 'rectangle';
   this.shape = null; // null for the plain rectangle, otherwise see shapes.js
   this.outline = null;
+  this.colorer = null; // null for each particle's own colour, otherwise see colors.js
 
   // The area outside the shape is shaded, behind the particles.
   this.setShape = function(name){
@@ -71,8 +72,10 @@ function World(sizeX, sizeY, canvasId){
     }
   }
   this.draw = function(){
+    if (this.colorer && this.colorer.prepare) { this.colorer.prepare(this.particles); }
     for (var i = 0; i < this.particles.length; i++) {
-      this.particles[i].draw();
+      var p = this.particles[i];
+      p.draw(this.colorer && this.colorer(p));
     }
   }
   this.initiated = true;

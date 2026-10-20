@@ -123,6 +123,8 @@ function setupWorld(opts) {
   // Shared by every particle, so changing it in place affects them all.
   var forces = [];
   var limitsType;
+  var colors = null;
+  var massRange = { min: opts.minMass, max: opts.maxMass };
 
   var sim = {
     world: world,
@@ -149,7 +151,15 @@ function setupWorld(opts) {
     setCollisions: function(enabled, energyLoss) {
       world.collisions = enabled ? { restitution: Math.sqrt(1 - energyLoss) } : null;
     },
+    // See colors.js. Size blends span the min-max size of the latest reset.
+    setColors: function(mode, from, to) {
+      colors = { mode: mode, from: from, to: to };
+      world.colorer = makeColorer(mode, from, to, massRange.min, massRange.max);
+      world.draw();
+    },
     reset: function(numberOfParticles, minMass, maxMass) {
+      massRange = { min: minMass, max: maxMass };
+      if (colors) { world.colorer = makeColorer(colors.mode, colors.from, colors.to, minMass, maxMass); }
       world.clear();
       var pf = new ParticleFactory(world);
       pf.build(numberOfParticles, new RandomMassComputer(minMass, maxMass), forces);
