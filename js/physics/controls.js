@@ -166,9 +166,9 @@ document.addEventListener('DOMContentLoaded', function(){
     sim.setSize(settings.width, settings.height);
     gravityPoints.resize(settings.width, settings.height);
   }
-  panel.append(slider('width', 'Width', { min: 100, max: 800, step: 10, value: settings.width },
+  panel.append(slider('width', 'Width', { min: 100, max: 1200, step: 10, value: settings.width },
     function(value) { settings.width = value; resize(); }));
-  panel.append(slider('height', 'Height', { min: 100, max: 800, step: 10, value: settings.height },
+  panel.append(slider('height', 'Height', { min: 100, max: 1200, step: 10, value: settings.height },
     function(value) { settings.height = value; resize(); }));
 
   applyCollisions();
@@ -213,7 +213,7 @@ document.addEventListener('DOMContentLoaded', function(){
     group.querySelector('input[type=range]').value = value;
     group.querySelector('span').textContent = String(value);
   }
-  var sizeRange = { min: 1, max: 40, step: 1 };
+  var sizeRange = { min: 1, max: 50, step: 1 };
   var minMassSlider = slider('min-mass', 'Min size', Object.assign({ value: settings.minMass }, sizeRange),
     null, function(value) {
       settings.minMass = value;
