@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', function(){
   var clearButton = el('button', { type: 'button', class: 'btn btn-default btn-xs' }, ['Delete all']);
   panel.append(pointList, el('div', { class: 'form-group' }, [clearButton]));
   gravityPoints = new GravityPoints(document.getElementById('world'), pointList, function() {
-    clearButton.hidden = !gravityPoints.forceOpts().length;
+    clearButton.hidden = !gravityPoints.count();
     sim.setForces(currentForceOpts());
   });
   clearButton.hidden = true;

@@ -63,6 +63,26 @@
   paint-order: stroke;
 }
 
+#world .gravity-points .rubber circle {
+  stroke: #337ab7;
+}
+
+#world .gravity-points .rubber circle.centre {
+  fill: #337ab7;
+}
+
+#world .gravity-points .repel circle {
+  stroke: #e67e22;
+}
+
+#world .gravity-points .repel circle.centre {
+  fill: #e67e22;
+}
+
+#world .gravity-points .concealed {
+  display: none;
+}
+
 #world .gravity-points .growing circle {
   stroke-dasharray: 3 2;
 }
@@ -81,7 +101,38 @@
 }
 
 #controls .gravity-point-list li {
+  margin-bottom: 8px;
+}
+
+#controls .gravity-point-header,
+#controls .gravity-point-strength {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 6px;
+}
+
+#controls .gravity-point-header .position {
+  flex: 1;
+  white-space: nowrap;
+}
+
+#controls .gravity-point-header .hide-point {
+  margin: 0;
+  white-space: nowrap;
+}
+
+#controls .gravity-point-header select {
+  width: auto;
+  height: 24px;
+  padding: 0 4px;
+}
+
+#controls .gravity-point-strength input {
+  flex: 1;
+  min-width: 0;
+}
+
+#controls .gravity-point-strength span {
+  min-width: 3em;
+  text-align: right;
 }
