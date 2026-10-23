@@ -59,15 +59,19 @@ function GravityPoints(canvas, list, onChange){
     return Math.round(value / step) * step;
   }
 
-  // Pointer events, so a press works with a mouse, a pen or a finger.
+  // Pointer events, so a press works with a mouse, a pen or a finger. A press that
+  // moves further than DRAG_DISTANCE screen pixels is a drag (steering the particles
+  // with the mouse forces, say), not a placement, so it doesn't leave a point.
+  var DRAG_DISTANCE = 10;
   var press = null;
   canvas.addEventListener('pointerdown', function(e){
     if (e.button !== 0 || press) { return; }
     e.preventDefault();
     canvas.setPointerCapture(e.pointerId);
-    var rect = canvas.getBoundingClientRect();
-    var x = e.clientX - rect.left, y = e.clientY - rect.top;
-    press = { id: e.pointerId, x: x, y: y, start: performance.now(), marker: marker(x, y) };
+    var position = worldPosition(canvas, e);
+    var x = position.x, y = position.y;
+    press = { id: e.pointerId, x: x, y: y, clientX: e.clientX, clientY: e.clientY,
+              start: performance.now(), marker: marker(x, y) };
     press.marker.classList.add('growing');
     (function grow(){
       if (!press) { return; }
@@ -93,11 +97,19 @@ function GravityPoints(canvas, list, onChange){
     list.append(point.item);
     changed();
   });
-  canvas.addEventListener('pointercancel', function(e){
+  function cancelPress(e){
     if (!press || e.pointerId !== press.id) { return; }
     press.marker.remove();
     press = null;
+  }
+  canvas.addEventListener('pointercancel', cancelPress);
+  canvas.addEventListener('pointermove', function(e){
+    if (press && Math.hypot(e.clientX - press.clientX, e.clientY - press.clientY) > DRAG_DISTANCE) {
+      cancelPress(e);
+    }
   });
+  // A long press on a touch screen would otherwise open the context menu.
+  canvas.addEventListener('contextmenu', function(e){ e.preventDefault(); });
 
   this.remove = function(point){
     point.marker.remove();

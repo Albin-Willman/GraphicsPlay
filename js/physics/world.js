@@ -7,8 +7,14 @@ function World(sizeX, sizeY, canvasId){
     this.initiated = false;
     return false;
   }
-  this.canvas.setAttribute('width', sizeX);
-  this.canvas.setAttribute('height', sizeY);
+  // The viewBox keeps world coordinates in pixels of the world even when CSS scales
+  // the canvas down to fit a small screen.
+  this.setCanvasSize = function(){
+    this.canvas.setAttribute('width', this.sizeX);
+    this.canvas.setAttribute('height', this.sizeY);
+    this.canvas.setAttribute('viewBox', '0 0 ' + this.sizeX + ' ' + this.sizeY);
+  }
+  this.setCanvasSize();
   this.particles = [];
   // Particles get their own layer, so anything drawn over them stays on top after a reset.
   this.particleLayer = document.createElementNS(svgns, 'g');
@@ -53,8 +59,7 @@ function World(sizeX, sizeY, canvasId){
     }
     this.sizeX = sizeX;
     this.sizeY = sizeY;
-    this.canvas.setAttribute('width', sizeX);
-    this.canvas.setAttribute('height', sizeY);
+    this.setCanvasSize();
     if (this.shape) { this.setShape(this.shapeName); }
     this.draw();
   }

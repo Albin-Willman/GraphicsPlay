@@ -57,20 +57,36 @@ function buildDirectionFunction(direction) {
   return function() { return direction; }
 }
 
+// Where a pointer event is in world coordinates. The canvas can be drawn smaller than
+// the world (on a narrow screen), so screen pixels are scaled by its viewBox.
+function worldPosition(canvas, e) {
+  var rect = canvas.getBoundingClientRect();
+  var box = canvas.viewBox.baseVal;
+  var width = canvas.clientWidth || rect.width, height = canvas.clientHeight || rect.height;
+  return new Vector(
+    (e.clientX - rect.left - canvas.clientLeft) * box.width / width,
+    (e.clientY - rect.top - canvas.clientTop) * box.height / height);
+}
+
 function setupForceFunctions(canvasId) {
   var canvas = document.getElementById(canvasId);
   var mousePosition = false;
   var heldKeys = {};
 
-  // Mouse forces only act while the cursor is over the world.
-  canvas.addEventListener('mousemove', function(e){
-    var pos = new Vector(e.clientX, e.clientY);
-    var rect   = canvas.getBoundingClientRect();
-    var topCorner = new Vector(rect.left, rect.top);
-    mousePosition = pos.difference(topCorner);
-  });
-  canvas.addEventListener('mouseleave', function(){
+  // The mouse forces follow a mouse while it's over the world, or a finger or pen
+  // while it touches the world (pointer events cover all three).
+  function follow(e){
+    mousePosition = worldPosition(canvas, e);
+  }
+  function release(){
     mousePosition = false;
+  }
+  canvas.addEventListener('pointermove', follow);
+  canvas.addEventListener('pointerdown', follow);
+  canvas.addEventListener('pointerleave', release);
+  canvas.addEventListener('pointercancel', release);
+  canvas.addEventListener('pointerup', function(e){
+    if (e.pointerType != 'mouse') { release(); }
   });
 
   function activeDirection(key){
@@ -110,9 +126,15 @@ function setupForceFunctions(canvasId) {
     heldKeys = {};
   });
 
+  // For on-screen arrow buttons, which hold a key down like the keyboard does.
+  function holdKey(key, held){
+    if (held) { heldKeys[key] = true; } else { delete heldKeys[key]; }
+  }
+
   return {
       mousePosition: function() { return mousePosition; },
-      keyDirection: keyDirection
+      keyDirection: keyDirection,
+      holdKey: holdKey
   };
 }
 

@@ -8,7 +8,7 @@ It can be stuff that I have written or stuff that I have found on the internet a
 
 - **Animations** (`animations.html`): rotating icons and a flip card, in pure CSS.
 - **3D** (`three-d.html`): a rotating CSS cube and a draggable sphere built from CSS-transformed panels.
-- **Physics** (`physics.html`): a small 2D particle engine drawn with SVG, with live controls for the forces, the world's shape and size, the edge behaviour, collisions, the ball colours and the number of particles. Press and hold in the world to place a gravity point (hold longer for a stronger pull); they are listed in the panel, where each can be switched between gravity and a rubber band, have its strength changed (negative gravity repels), be hidden or be deleted.
+- **Physics** (`physics.html`): a small 2D particle engine drawn with SVG, with live controls for the forces, the world's shape and size, the edge behaviour, collisions, the ball colours and the number of particles. It works with a mouse or a touch screen (with on-screen arrow keys). Press and hold in the world to place a gravity point (hold longer for a stronger pull); they are listed in the panel, where each can be switched between gravity and a rubber band, have its strength changed (negative gravity repels), be hidden or be deleted.
 
 ## Running it
 
