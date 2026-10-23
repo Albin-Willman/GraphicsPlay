@@ -17,6 +17,7 @@ function Particle(x, y, mass, world){
     return this.position.y;
   }
   this.update = function(){
+    this.previousPosition = this.position;
     this.position = this.position.add(this.velocity);
     for (var i = 0; i < this.forces.length; i++) {
       this.nudge(this.forces[i].compute(this));
@@ -29,19 +30,31 @@ function Particle(x, y, mass, world){
     this.force    = new Vector(0, 0);
     return this;
   }
+  // How fast it visibly moves, in px per step. Its velocity alone overstates this for a
+  // particle at rest in a pile (the velocity keeps the gravity the collisions cancel),
+  // and the distance moved overstates it in the step it wraps around the edge.
+  this.speed = function() {
+    var moved = this.previousPosition ? this.position.difference(this.previousPosition).magnitude() : 0;
+    return Math.min(moved, this.velocity.magnitude());
+  }
   this.acceleration = function() {
     return this.force.scale(1/this.mass);
   }
   this.nudge = function(force) {
     this.force = this.force.add(force);
   }
-  // The circle is created once; later frames only move it.
-  this.draw = function(){
+  // The circle is created once; later frames only move it, and only recolour it
+  // when the colour has changed. `fill` defaults to the particle's own colour.
+  this.draw = function(fill){
+    fill = fill || this.color;
     if (!this.el) {
       this.el = document.createElementNS(svgns, "circle");
       this.el.setAttribute('r', this.mass);
-      this.el.setAttribute('fill', this.color);
-      this.world.canvas.appendChild(this.el);
+      this.world.particleLayer.appendChild(this.el);
+    }
+    if (fill !== this.fill) {
+      this.el.setAttribute('fill', fill);
+      this.fill = fill;
     }
     this.el.setAttribute('cx', this.x());
     this.el.setAttribute('cy', this.y());
@@ -50,6 +63,7 @@ function Particle(x, y, mass, world){
     if (this.el) {
       this.el.remove();
       this.el = null;
+      this.fill = null;
     }
   }
 }

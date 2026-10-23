@@ -18,6 +18,12 @@ section {
   padding: var(--base-padding) 0;
 }
 
+@media (min-width: 1600px) {
+    .container {
+        width: 1570px;
+    }
+}
+
 .info .info-text {
   font-size: 24px;
 }

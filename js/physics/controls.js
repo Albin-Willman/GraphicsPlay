@@ -21,6 +21,21 @@ var LIMIT_OPTIONS = [
   { value: 'none',   label: 'No walls' },
 ];
 
+// See colors.js. Each mode lists the labels of the colour pickers it uses.
+var COLOR_OPTIONS = [
+  { value: 'random', label: 'Random' },
+  { value: 'solid',  label: 'Solid' },
+  { value: 'size',   label: 'By size' },
+  { value: 'speed',  label: 'By speed' },
+  { value: 'height', label: 'By position (top to bottom)' },
+];
+var COLOR_PICKER_LABELS = {
+  solid: ['Colour'],
+  size:  ['Small', 'Big'],
+  speed: ['Slow', 'Fast'],
+  height: ['Top', 'Bottom'],
+};
+
 document.addEventListener('DOMContentLoaded', function(){
   var panel = document.getElementById('controls');
   if (!panel || !document.getElementById('world')) { return; }
@@ -32,14 +47,18 @@ document.addEventListener('DOMContentLoaded', function(){
     down:  buildDirectionFunction(new Vector(0, 1)),
   };
 
-  var settings = { width: 500, height: 500, shape: 'rectangle', limits: 'hard', numberOfParticles: 200, minMass: 1, maxMass: 25, collisions: false, collisionLoss: 10 };
+  var settings = { width: 500, height: 500, shape: 'rectangle', limits: 'hard', numberOfParticles: 200, minMass: 1, maxMass: 25, collisions: false, collisionLoss: 10,
+                   colorMode: 'random', colorFrom: '#1f3a93', colorTo: '#ff5a1f' };
 
   function applyCollisions() { sim.setCollisions(settings.collisions, settings.collisionLoss / 100); }
 
+  // The sliders' forces plus one per gravity point (set up once the world exists).
+  var gravityPoints = null;
   function currentForceOpts() {
     return FORCE_CONTROLS
       .filter(function(c) { return c.enabled; })
-      .map(function(c) { return buildForceOpts(c.type, c.value, directions[c.direction] || null); });
+      .map(function(c) { return buildForceOpts(c.type, c.value, directions[c.direction] || null); })
+      .concat(gravityPoints ? gravityPoints.forceOpts() : []);
   }
 
   var sim = setupWorld({
@@ -102,6 +121,18 @@ document.addEventListener('DOMContentLoaded', function(){
       function(enabled) { c.enabled = enabled; sim.setForces(currentForceOpts()); }));
   });
 
+  // Gravity points
+  panel.append(el('h4', {}, ['Gravity points']));
+  var pointList = el('ul', { class: 'list-unstyled gravity-point-list' });
+  var clearButton = el('button', { type: 'button', class: 'btn btn-default btn-xs' }, ['Delete all']);
+  panel.append(pointList, el('div', { class: 'form-group' }, [clearButton]));
+  gravityPoints = new GravityPoints(document.getElementById('world'), pointList, function() {
+    clearButton.hidden = !gravityPoints.count();
+    sim.setForces(currentForceOpts());
+  });
+  clearButton.hidden = true;
+  clearButton.addEventListener('click', function() { gravityPoints.clear(); });
+
   // World
   panel.append(el('h4', {}, ['World']));
   function select(id, label, options, value, onChange) {
@@ -131,10 +162,13 @@ document.addEventListener('DOMContentLoaded', function(){
     sim.setLimits(value);
   });
 
-  function resize() { sim.setSize(settings.width, settings.height); }
-  panel.append(slider('width', 'Width', { min: 100, max: 800, step: 10, value: settings.width },
+  function resize() {
+    sim.setSize(settings.width, settings.height);
+    gravityPoints.resize(settings.width, settings.height);
+  }
+  panel.append(slider('width', 'Width', { min: 100, max: 1200, step: 10, value: settings.width },
     function(value) { settings.width = value; resize(); }));
-  panel.append(slider('height', 'Height', { min: 100, max: 800, step: 10, value: settings.height },
+  panel.append(slider('height', 'Height', { min: 100, max: 1200, step: 10, value: settings.height },
     function(value) { settings.height = value; resize(); }));
 
   applyCollisions();
@@ -142,6 +176,32 @@ document.addEventListener('DOMContentLoaded', function(){
     { min: 0, max: 100, step: 1, value: settings.collisionLoss }, settings.collisions,
     function(value) { settings.collisionLoss = value; applyCollisions(); },
     function(enabled) { settings.collisions = enabled; applyCollisions(); }));
+
+  // Colours: the pickers' labels follow the mode, and only the ones it uses are shown.
+  function colorPicker(value, onInput) {
+    var input = el('input', { type: 'color', value: value });
+    input.addEventListener('input', function() { onInput(input.value); });
+    var label = el('span');
+    return { input: input, label: label, node: el('label', { class: 'color-picker' }, [input, ' ', label]) };
+  }
+  function applyColors() {
+    sim.setColors(settings.colorMode, settings.colorFrom, settings.colorTo);
+    var labels = COLOR_PICKER_LABELS[settings.colorMode] || [];
+    fromPicker.label.textContent = labels[0] || '';
+    toPicker.label.textContent = labels[1] || '';
+    fromPicker.node.hidden = !labels[0];
+    toPicker.node.hidden = !labels[1];
+    pickers.hidden = !labels.length;
+  }
+  select('color-mode', 'Colour', COLOR_OPTIONS, settings.colorMode, function(value) {
+    settings.colorMode = value;
+    applyColors();
+  });
+  var fromPicker = colorPicker(settings.colorFrom, function(value) { settings.colorFrom = value; applyColors(); });
+  var toPicker = colorPicker(settings.colorTo, function(value) { settings.colorTo = value; applyColors(); });
+  var pickers = el('div', { class: 'form-group' }, [fromPicker.node, ' ', toPicker.node]);
+  panel.append(pickers);
+  applyColors();
 
   function reset() { sim.reset(settings.numberOfParticles, settings.minMass, settings.maxMass); }
 
@@ -153,7 +213,7 @@ document.addEventListener('DOMContentLoaded', function(){
     group.querySelector('input[type=range]').value = value;
     group.querySelector('span').textContent = String(value);
   }
-  var sizeRange = { min: 1, max: 40, step: 1 };
+  var sizeRange = { min: 1, max: 50, step: 1 };
   var minMassSlider = slider('min-mass', 'Min size', Object.assign({ value: settings.minMass }, sizeRange),
     null, function(value) {
       settings.minMass = value;

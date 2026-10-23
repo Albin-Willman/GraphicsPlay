@@ -22,3 +22,117 @@
 #controls input[type=range]:disabled {
   opacity: 0.4;
 }
+
+#controls .color-picker {
+  margin-right: 10px;
+}
+
+#controls input[type=color] {
+  width: 32px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid #ccc;
+  vertical-align: middle;
+}
+
+#world {
+  touch-action: none; /* a press on the world places a gravity point instead of scrolling */
+}
+
+#world .gravity-points {
+  pointer-events: none;
+}
+
+#world .gravity-points circle {
+  fill: rgba(0, 0, 0, 0.08);
+  stroke: #333;
+  stroke-width: 1.5;
+}
+
+#world .gravity-points circle.centre {
+  fill: #333;
+  stroke: none;
+}
+
+#world .gravity-points text {
+  font-size: 11px;
+  text-anchor: middle;
+  fill: #333;
+  stroke: #fff; /* a halo, so the label reads over the particles */
+  stroke-width: 3px;
+  paint-order: stroke;
+}
+
+#world .gravity-points .rubber circle {
+  stroke: #337ab7;
+}
+
+#world .gravity-points .rubber circle.centre {
+  fill: #337ab7;
+}
+
+#world .gravity-points .repel circle {
+  stroke: #e67e22;
+}
+
+#world .gravity-points .repel circle.centre {
+  fill: #e67e22;
+}
+
+#world .gravity-points .concealed {
+  display: none;
+}
+
+#world .gravity-points .growing circle {
+  stroke-dasharray: 3 2;
+}
+
+#world .gravity-points .highlight circle {
+  stroke: #d9534f;
+  stroke-width: 3;
+}
+
+#world .gravity-points .highlight circle.centre {
+  fill: #d9534f;
+}
+
+#controls .gravity-point-list {
+  margin-bottom: 5px;
+}
+
+#controls .gravity-point-list li {
+  margin-bottom: 8px;
+}
+
+#controls .gravity-point-header,
+#controls .gravity-point-strength {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+#controls .gravity-point-header .position {
+  flex: 1;
+  white-space: nowrap;
+}
+
+#controls .gravity-point-header .hide-point {
+  margin: 0;
+  white-space: nowrap;
+}
+
+#controls .gravity-point-header select {
+  width: auto;
+  height: 24px;
+  padding: 0 4px;
+}
+
+#controls .gravity-point-strength input {
+  flex: 1;
+  min-width: 0;
+}
+
+#controls .gravity-point-strength span {
+  min-width: 3em;
+  text-align: right;
+}
