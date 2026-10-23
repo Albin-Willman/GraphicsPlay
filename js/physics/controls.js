@@ -228,6 +228,25 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   panel.append(minMassSlider, maxMassSlider);
 
+  // On-screen arrow keys for touch screens (CSS hides them where there's a mouse).
+  // Holding a button holds that arrow key down.
+  var arrowPad = el('div', { class: 'arrow-pad', 'aria-label': 'Arrow key push' },
+    [['ArrowUp', 'up'], ['ArrowLeft', 'left'], ['ArrowDown', 'down'], ['ArrowRight', 'right']].map(function(arrow) {
+      var button = el('button', { type: 'button', class: 'btn btn-default arrow-' + arrow[1], 'aria-label': 'Push ' + arrow[1] },
+        [el('i', { class: 'fa fa-arrow-' + arrow[1] })]);
+      button.addEventListener('pointerdown', function(e) {
+        e.preventDefault();
+        button.setPointerCapture(e.pointerId);
+        ff.holdKey(arrow[0], true);
+      });
+      ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(function(type) {
+        button.addEventListener(type, function() { ff.holdKey(arrow[0], false); });
+      });
+      button.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+      return button;
+    }));
+  document.getElementById('world').after(arrowPad);
+
   var pauseButton = el('button', { type: 'button', class: 'btn btn-default' }, ['Pause']);
   pauseButton.addEventListener('click', function() {
     sim.paused = !sim.paused;

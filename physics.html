@@ -36,13 +36,15 @@
   <section>
     <div class="container">
       <h2>Physics</h2>
-      <p>Particles react to the mouse; the arrow keys push them. Press and hold in the world to place a gravity point.</p>
+      <p>Particles react to the mouse (or your finger); the arrow keys push them. Press and hold in the world to place a gravity point.</p>
+      <!-- The world comes first so it's on top on narrow screens; on wide ones the
+           controls are pulled to the left of it. -->
       <div class="row">
-        <div class="col-md-3">
-          <form id="controls" onsubmit="return false;"></form>
-        </div>
-        <div class="col-md-9">
+        <div class="col-md-9 col-md-push-3">
           <svg id="world" width="500" height="500"></svg>
+        </div>
+        <div class="col-md-3 col-md-pull-9">
+          <form id="controls" onsubmit="return false;"></form>
         </div>
       </div>
     </div>

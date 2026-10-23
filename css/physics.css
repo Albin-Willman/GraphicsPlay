@@ -1,5 +1,12 @@
 #world {
   border: 1px solid #ddd;
+  /* Shrinks to fit a narrow screen; the viewBox keeps the world's coordinates. */
+  max-width: 100%;
+  height: auto;
+  /* A long press places a gravity point, so don't select text or open a callout. */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 
 #world .world-outside {
@@ -136,3 +143,28 @@
   min-width: 3em;
   text-align: right;
 }
+
+/* On-screen arrow keys, only on touch screens. */
+.arrow-pad {
+  display: none;
+  grid-template-columns: repeat(3, 48px);
+  grid-template-rows: repeat(2, 48px);
+  gap: 4px;
+  justify-content: center;
+  margin: 10px 0;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .arrow-pad {
+    display: grid;
+  }
+}
+
+.arrow-pad .arrow-up    { grid-column: 2; grid-row: 1; }
+.arrow-pad .arrow-left  { grid-column: 1; grid-row: 2; }
+.arrow-pad .arrow-down  { grid-column: 2; grid-row: 2; }
+.arrow-pad .arrow-right { grid-column: 3; grid-row: 2; }
